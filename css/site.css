@@ -40,9 +40,8 @@ code, pre {
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(12px);
 }
-.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.brand img:first-child { border-radius: 8px; }
-.wordmark { height: 28px; width: auto; }
+.brand { display: flex; align-items: center; text-decoration: none; }
+.wordmark { height: 36px; width: auto; }
 nav { display: flex; gap: 22px; align-items: center; }
 nav a { color: var(--muted); text-decoration: none; font-size: 15px; }
 nav a:hover { color: var(--text); }
