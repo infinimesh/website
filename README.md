@@ -1,7 +1,5 @@
 # Infinimesh website
 
-Static site (`index.html`, `css/`, `js/`, `images/`, `fonts/`).
+Static site published with GitHub Pages at https://infinimesh.github.io/website/.
 
-Third-party assets under `css/` keep the license headers they shipped with.
-
-Apache-2.0 for the site itself.
+`index.html` and `css/site.css` are the page. `images/favico.webp` and `images/logo_03.png` are the mark. Apache-2.0.
