@@ -1,0 +1,17 @@
+# Link check. Local hosts and example domains are skipped.
+exclude = [
+  "^https?://localhost",
+  "^https?://127\\.0\\.0\\.1",
+  "nip\\.io",
+  "infinimesh\\.local",
+  "example\\.(com|org)",
+  "^mqtts?://",
+  "^https?://[^./:]+(:[0-9]+)?(/|$)",  # in-cluster hostnames such as http://api:8000
+  "^https://(www\\.)?linkedin\\.com",
+  "^https://(x|twitter)\\.com",
+]
+exclude_path = [".git", "api/swagger-ui-bundle.js", "api/openapi.json"]
+max_retries = 2
+timeout = 20
+accept = ["200..=299", "403", "429"]
+include_fragments = false
