@@ -30,7 +30,8 @@
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is any feature held back for a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. The open source core is complete and free. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
-{"@type":"Question","name":"Can devices send data without MQTT?","acceptedAnswer":{"@type":"Answer","text":"Yes. Devices can POST state over HTTP with a device token. It lands in the same shadow as MQTT and reaches the same addons."}},
+{"@type":"Question","name":"Can devices send data without MQTT?","acceptedAnswer":{"@type":"Answer","text":"Yes. Devices can send their own JSON with POST /v1/ingest and a device token, and read desired state with GET /v1/ingest/desired. It lands in the same shadow as MQTT and reaches the same addons."}},
+{"@type":"Question","name":"Is the infinimesh API stable?","acceptedAnswer":{"@type":"Answer","text":"Yes. The v1 API is stable. REST paths are under /v1 and the protobuf packages are infinimesh.*.v1. Breaking changes are checked in CI against the proto v1.0.0 tag. See the API versioning policy in the core repo."}},
 {"@type":"Question","name":"Does infinimesh include dashboards?","acceptedAnswer":{"@type":"Answer","text":"No. infinimesh streams device data through addons to tools you already run, such as Kafka, Postgres, InfluxDB or a webhook. Use Grafana or your own app on top."}},
 {"@type":"Question","name":"Does infinimesh make my product EU Data Act compliant?","acceptedAnswer":{"@type":"Answer","text":"No software does that by itself. infinimesh gives you an access model where each customer and partner sees only their devices, which helps you build data access."}}]}
 ]
@@ -66,7 +67,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 
 <section id="how">
 <h2>How it works</h2>
-<p>Devices connect over MQTT 3.1.1 or 5, or send state over HTTP with <code>POST /devices/states</code> and a device token. The bridge checks the device certificate and topic. The shadow keeps reported and desired state. Addons read the stream and write it where you want it.</p>
+<p>Devices connect over MQTT 3.1.1 or 5, or send their own JSON over HTTP with <code>POST /v1/ingest</code> and a device token. The bridge checks the device certificate and topic. The shadow keeps reported and desired state. Addons read the stream and write it where you want it.</p>
 <figure aria-label="Data flow from device to your stack">
 <svg viewBox="0 0 1000 230" role="img"><title>Data flow: device, MQTT bridge or HTTP API, shadow, addons, your stack</title>
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:#888"/></marker></defs>
@@ -107,6 +108,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <div class="card"><h3>Device makers</h3><p>You run your own backend and need each customer, and their partners, to see only their devices.</p></div>
 <div class="card"><h3>Teams with a data stack</h3><p>You already have Kafka, Postgres or a warehouse and want devices to feed it, not a second dashboard.</p></div>
 <div class="card"><h3>Self-hosters</h3><p>You want the backend on your servers, under Apache-2.0, without a price list per device.</p></div>
+<div class="card"><h3>Stable v1 API</h3><p>REST under <code>/v1</code>, gRPC and Connect from one proto schema. Breaking changes are checked against the v1.0.0 tag. <a href="https://github.com/infinimesh/core/blob/main/docs/api-versioning.md">Versioning policy</a>, <a href="/api/">API reference</a>.</p></div>
 </div>
 <h2 style="margin-top:36px">When not to use it</h2>
 <div class="grid">
@@ -118,7 +120,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 
 <section id="addons">
 <h2>Addons</h2>
-<p>Each addon is a small separate service that reads device state and writes it out. Writing your own is mostly reading one stream. <a href="https://github.com/infinimesh/addons">See the addons repo</a>.</p>
+<p>Each addon is a small separate service that reads device state and writes it out. Writing your own is mostly reading one stream: one stream per account or namespace, with device added and removed events, and an event id on every message so retries can drop duplicates. A read-only streaming token lets a long-running addon follow it without a per-device token. <a href="https://github.com/infinimesh/core/blob/main/docs/shadow.md">Stream docs</a>, <a href="https://github.com/infinimesh/addons">addons repo</a>.</p>
 <div class="grid">
 <div class="card"><h3>Kafka / KafScale</h3><p>JSON per update, keyed by device ID.</p></div>
 <div class="card"><h3>Postgres / TimescaleDB</h3><p>Rows per state update.</p></div>

@@ -27,13 +27,22 @@ jobs:
       - name: Refresh API spec from infinimesh/proto
         run: |
           if curl -fsSL https://raw.githubusercontent.com/infinimesh/proto/main/api.swagger.json -o /tmp/spec.json; then
-            jq '.info={title:"infinimesh API (beta)",version:"v3 beta",description:"REST mapping of the infinimesh gRPC and Connect API, generated from github.com/infinimesh/proto. Beta until the v1 API is released."}' /tmp/spec.json > api/openapi.json
+            cp /tmp/spec.json api/openapi.json
           else
             echo "proto spec not reachable, keeping the committed copy"
           fi
+      - name: Build the site folder without repo tooling
+        run: |
+          mkdir _site
+          rsync -a \
+            --exclude .git --exclude .github --exclude _site \
+            --exclude Makefile --exclude scripts/ \
+            --exclude lychee.toml --exclude .htmlhintrc --exclude .yamllint.yml \
+            --exclude .gitignore \
+            ./ _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

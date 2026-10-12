@@ -6,9 +6,11 @@ infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster y
 
 ## Docs
 - [Installation](https://github.com/infinimesh/core/blob/main/docs/installation.md): Docker Compose on one machine
-- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login
+- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login, HTTP ingest
 - [Public TLS](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): running on a public domain
-- [API reference (beta)](https://infinimesh.org/api/): REST view of the API, OpenAPI spec at https://infinimesh.org/api/openapi.json. Devices send state with POST /devices/states and a device token.
+- [API reference](https://infinimesh.org/api/): REST view of the stable v1 API, OpenAPI spec at https://infinimesh.org/api/openapi.json. Devices send their own JSON with POST /v1/ingest and a device token (16 KB max, 60 requests a minute), and read desired state with GET /v1/ingest/desired.
+- [API versioning](https://github.com/infinimesh/core/blob/main/docs/api-versioning.md): the v1 API is stable, REST under /v1, breaking changes checked against proto v1.0.0
+- [Device shadow streams](https://github.com/infinimesh/core/blob/main/docs/shadow.md): account and namespace streams, event ids, read-only streaming token for addons
 - [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
 
 ## Code
@@ -40,8 +42,6 @@ What you get:
 - A web console
 - Docker Compose and Kubernetes setups
 
-The APIs are beta. They may still change between releases.
-
 ## Quickstart
 
 You need Docker with Docker Compose.
@@ -55,11 +55,13 @@ docker compose up -d
 
 Open http://console.127.0.0.1.nip.io
 
+It redirects to HTTPS with a local self-signed certificate, so accept the browser warning.
+
 Log in as `infinimesh` / `infinimesh`. Change the password right away.
 
 Images come from GHCR. Set `INFINIMESH_VERSION` in `.env` to pin a release.
 
-`BASE_DOMAIN` in `.env` is the root host for all services. The default, `127.0.0.1.nip.io`, resolves to your own machine, so it works locally with no `/etc/hosts` edits. For real use, set `BASE_DOMAIN` to your own domain.
+`BASE_DOMAIN` in `.env` is the root host for all services. The default, `127.0.0.1.nip.io`, resolves to your own machine, so it works locally with no `/etc/hosts` edits. For real use, set `BASE_DOMAIN` to your own domain (see [docs/public-tls.md](docs/public-tls.md)).
 
 Other services:
 
@@ -79,7 +81,6 @@ MQTT listens on 1883 (plain) and 8883 (TLS with `hack/server.crt` and `hack/serv
 ## When not to use it
 
 - You want a fully managed cloud service and do not want to run servers.
-- You need stable, frozen APIs today. Ours are still beta.
 - You only have a few devices and one user. A plain MQTT broker is simpler.
 
 ## CLI (inf)
@@ -150,7 +151,7 @@ mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
 - [docs/installation.md](docs/installation.md): prerequisites and Docker Compose setup
 - [docs/public-tls.md](docs/public-tls.md): Traefik or Caddy with Let's Encrypt on a public domain
 - [docs/device-auth.md](docs/device-auth.md): device tokens, certificates and MQTT
-- [api.swagger.json](api.swagger.json): API schema
+- [api.swagger.json](api.swagger.json): API schema, copied from the pinned [proto](https://github.com/infinimesh/proto) module. `sh scripts/swagger_check.sh` fails if the copy drifts. `sh scripts/buf_lint_pin.sh` lints that module.
 
 ## Checks
 
@@ -182,6 +183,18 @@ Apache 2.0. See [LICENSE](LICENSE).
 
 ---
 Source: https://github.com/infinimesh/core
+# API versioning
+
+The schema lives in [github.com/infinimesh/proto](https://github.com/infinimesh/proto). `api.swagger.json` in this repo is a copy of that module. `sh scripts/swagger_check.sh` fails when the copy drifts. `sh scripts/buf_lint_pin.sh` runs `buf lint` on that module. `buf breaking` runs in the proto repository against the latest tag. Until that tag exists, the check is skipped.
+
+Protobuf packages are `infinimesh.*.v1`. REST methods are under `/v1`, and the previous path stays as an alias for one minor release. Create is `POST` on the `/v1` path. `exp`, `inf`, and `GetRequest.pool` remain, marked deprecated, beside `expires_at`, `infinite`, `devices`, and `device`.
+
+API errors are Connect errors. Each one carries a `google.rpc.ErrorInfo` reason on domain `infinimesh.org`. The shadow process returns that same reason on its gRPC status. The API keeps the reason when it converts the status.
+
+`POST /v1/ingest` posts reported JSON for a device token that names exactly one device and may post. The body is at most 16 KB, and that device is limited to 60 requests a minute. `GET /v1/ingest/desired?wait=N` returns desired JSON. `wait` is 0 to 60 seconds. A matching `If-None-Match` returns `304`.
+
+---
+Source: https://github.com/infinimesh/core
 # Device Authentication & MQTT
 
 infinimesh has no device SDK. A device brings its own MQTT client.
@@ -189,6 +202,10 @@ infinimesh has no device SDK. A device brings its own MQTT client.
 Devices authenticate with a TLS client certificate. Port 8883 requires the certificate. Port 1883 accepts the same certificate's SHA-256 fingerprint, base64-encoded, as the MQTT password. The username is the device id. The device must be enabled, and basic auth must be enabled for that device. Turn basic auth on in the console (the lock on the device card) or with `POST /devices/<device-id>/toggle/basic`.
 
 A device token (JWT) is for the HTTP, gRPC and Connect API. The bridge does not accept that token as the MQTT password.
+
+A token from device `Get` is read-only and expires in 24 hours. A token from `GetByFingerprint` may post reported state and expires in 24 hours. `POST /devices/token` with `post` true may write reported state without raising the token to the caller's level. Desired state still requires manage level. When `expires_at` and `exp` are both unset, that token expires in 24 hours. Each device token has a `jti`. `POST /v1/devices/token/revoke` denies that id until the token would have expired.
+
+`POST /v1/ingest` accepts a JSON object as reported state. The bearer token must name exactly one device and be allowed to post. The body is at most 16 KB. `GET /v1/ingest/desired` returns the desired JSON.
 
 Port 1883 is not encrypted. Anyone who knows the fingerprint can log in. Use it for local tests.
 
@@ -268,6 +285,26 @@ The bridge reads the client keepalive and closes the connection after one and a 
 - TLS failures: locally, `--cafile hack/server.crt`. On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](public-tls.md).
 
 ---
+Source: https://github.com/infinimesh/core
+# Device shadow
+
+`GET /devices/states/stream` follows reported state, desired state, and connection. Connection state published on `mqtt.incoming` is delivered to the device stream. A sync snapshot includes the stored connection.
+
+A device token streams the devices in that token. An account token streams the devices that account can read. `namespace` limits an account token to one readable namespace. Leaving it empty streams every namespace the account can read.
+
+An account stream emits `DEVICE_ADDED` for the devices present at subscribe, and later when a device is created, moved in, renamed, retagged, or shared directly with that account. It emits `DEVICE_REMOVED` when a device is deleted or moved out. A later `DEVICE_ADDED` for a device already on the stream refreshes its title, namespace, and tags.
+
+Each message has `eventId` and `sequence`. `resume_after` replays later events from that stream. Reported and desired state carry `version`, which increments when that side is patched. State messages include `title`, `namespace`, and `tags` when the registry has them.
+
+The same methods are also served under `/v1/devices/{device}/state`. The previous `/devices/states` paths remain.
+
+`only_delta` defaults to false. A state message is then the stored shadow with the published change merged in. `only_delta` true sends that published change. `include` limits a state message to `REPORTED`, `DESIRED`, or `CONNECTION`. An empty `include` sends all three. Membership events are sent whole.
+
+`GET /devices/states`, `PATCH /devices/states`, and key removal still require a device token.
+
+`POST /devices/token` with `stream` true and an empty device map mints a read-only token for the caller account. `namespace` limits that token to one namespace the account can read. The token opens `GET /devices/states/stream` and the sync stream. It is rejected by every other API.
+
+---
 Source: https://github.com/infinimesh/addons
 # Infinimesh addons
 
@@ -285,6 +322,7 @@ Apache-2.0.
 | [`postgres`](postgres/README.md) | API to a Postgres table, optionally a TimescaleDB hypertable |
 | [`influxdb`](influxdb/README.md) | API to InfluxDB 2, InfluxDB Cloud or InfluxDB 3, one point per shadow update |
 | [`mqttbridge`](mqttbridge/README.md) | API to an existing MQTT broker, JSON per shadow update on a topic template |
+| [`rules`](rules/README.md) | rules and alarms on shadow updates, with webhook, MQTT, desired state and log actions |
 | [`cloudconnect`](cloudconnect/README.md) | API to CSV files, then S3, Google Cloud Storage or Azure Blob |
 | [`redisstream`](redisstream/README.md) | API to the Redis stream `objects`, read by the sinks below |
 | [`elasticsearch`](elasticsearch/README.md) | Redis stream to the Elasticsearch index `infinimesh` |
@@ -350,13 +388,14 @@ Each example is one sketch or script with a short README.
 ## Guides
 
 - [guides/small-devices-tls.md](guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
+- [guides/node-red.md](guides/node-red.md): send device data to Node-RED with the MQTT bridge or webhook addon.
 
 ## Good to know
 
 - Devices bring their own MQTT or HTTP client. infinimesh has no device SDK.
 - MQTT topics: a device publishes to `devices/<id>/state/reported` and subscribes to `devices/<id>/state/desired`. `<id>` is the device uuid.
 - Boards without TLS (for example ATmega Arduinos) should talk to a local gateway, such as a Raspberry Pi or an ESP32, which then connects to infinimesh over TLS. See the guide above.
-- The HTTP path `POST /devices/states` may change to a smaller `/v1/ingest` endpoint later. We will update the examples when it does.
+- HTTP devices send their own JSON with `POST /v1/ingest` and a device token, and read desired state with `GET /v1/ingest/desired`. The v1 API is stable, see [API versioning](https://github.com/infinimesh/core/blob/main/docs/api-versioning.md).
 - The boards themselves have not been tested yet. What was tested is listed in each README.
 
 ## Check before you commit
@@ -365,7 +404,7 @@ Each example is one sketch or script with a short README.
 make commit-check
 ```
 
-This runs shellcheck, a MicroPython compile check, and `arduino-cli compile` for both ESP32 sketches.
+This runs `make lint` and then compiles the examples. `make lint` runs shellcheck, markdownlint, a lychee link check, clang-format on the sketches, actionlint, yamllint and gitleaks. The compile step runs a MicroPython compile check and `arduino-cli compile` for both ESP32 sketches. On Linux, `sh scripts/install-lint-tools.sh` installs the lint tools; on macOS use `brew install shellcheck markdownlint-cli2 lychee clang-format actionlint yamllint gitleaks`.
 
 ## License
 

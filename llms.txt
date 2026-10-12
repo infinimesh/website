@@ -6,9 +6,11 @@ infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster y
 
 ## Docs
 - [Installation](https://github.com/infinimesh/core/blob/main/docs/installation.md): Docker Compose on one machine
-- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login
+- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login, HTTP ingest
 - [Public TLS](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): running on a public domain
-- [API reference (beta)](https://infinimesh.org/api/): REST view of the API, OpenAPI spec at https://infinimesh.org/api/openapi.json. Devices send state with POST /devices/states and a device token.
+- [API reference](https://infinimesh.org/api/): REST view of the stable v1 API, OpenAPI spec at https://infinimesh.org/api/openapi.json. Devices send their own JSON with POST /v1/ingest and a device token (16 KB max, 60 requests a minute), and read desired state with GET /v1/ingest/desired.
+- [API versioning](https://github.com/infinimesh/core/blob/main/docs/api-versioning.md): the v1 API is stable, REST under /v1, breaking changes checked against proto v1.0.0
+- [Device shadow streams](https://github.com/infinimesh/core/blob/main/docs/shadow.md): account and namespace streams, event ids, read-only streaming token for addons
 - [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
 
 ## Code
