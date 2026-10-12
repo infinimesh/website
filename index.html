@@ -144,12 +144,15 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 
 <section id="start">
 <h2>Quickstart</h2>
-<p>One machine with Docker Compose. First login is <code>infinimesh</code> / <code>infinimesh</code>. Change it.</p>
+<p>One machine with Docker Compose.</p>
 <pre><code>git clone https://github.com/infinimesh/core.git
 cd core
 cp .env.example .env
-docker compose up -d
-brew tap infinimesh/inf-cli https://github.com/infinimesh/inf-cli
+docker compose up -d</code></pre>
+<p>Open <a href="http://console.127.0.0.1.nip.io">http://console.127.0.0.1.nip.io</a></p>
+<p>Log in as <code>infinimesh</code> / <code>infinimesh</code>. Change the password right away.</p>
+<p>CLI:</p>
+<pre><code>brew tap infinimesh/inf-cli https://github.com/infinimesh/inf-cli
 brew install inf</code></pre>
 <p>Then connect a device: <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-mqtt">ESP32 over MQTT</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-http">ESP32 over HTTP</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/picow-mqtt">Pico W</a>, or <a href="https://github.com/infinimesh/docs/tree/main/examples/curl">curl</a>. Small boards that time out on TLS: read the <a href="https://github.com/infinimesh/docs/blob/main/guides/small-devices-tls.md">small-device TLS guide</a>.</p>
 </section>
