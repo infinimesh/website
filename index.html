@@ -13,14 +13,14 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="infinimesh">
 <meta property="og:title" content="infinimesh: the device layer for the stack you already run">
-<meta property="og:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. No paid edition.">
+<meta property="og:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
 <meta property="og:url" content="https://infinimesh.org/">
 <meta property="og:image" content="https://infinimesh.org/social/og-image.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="infinimesh: the device layer for the stack you already run. Apache-2.0.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="infinimesh: the device layer for the stack you already run">
-<meta name="twitter:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. No paid edition.">
+<meta name="twitter:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
 <meta name="twitter:image" content="https://infinimesh.org/social/twitter-card.png">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
 <script type="application/ld+json">
@@ -29,7 +29,7 @@
 {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"Is there a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
+{"@type":"Question","name":"Is any feature held back for a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. The open source core is complete and free. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
 {"@type":"Question","name":"Can devices send data without MQTT?","acceptedAnswer":{"@type":"Answer","text":"Yes. Devices can POST state over HTTP with a device token. It lands in the same shadow as MQTT and reaches the same addons."}},
 {"@type":"Question","name":"Does infinimesh include dashboards?","acceptedAnswer":{"@type":"Answer","text":"No. infinimesh streams device data through addons to tools you already run, such as Kafka, Postgres, InfluxDB or a webhook. Use Grafana or your own app on top."}},
 {"@type":"Question","name":"Does infinimesh make my product EU Data Act compliant?","acceptedAnswer":{"@type":"Answer","text":"No software does that by itself. infinimesh gives you an access model where each customer and partner sees only their devices, which helps you build data access."}}]}
@@ -60,7 +60,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <section>
 <p class="kicker">Apache-2.0 · self-hosted · written in Go</p>
 <h1>The device layer for the stack you already run.</h1>
-<p class="lede">infinimesh handles device identity, access and state. Your data goes to the tools you already use: Kafka, Postgres, InfluxDB, a webhook. No dashboard you have to adopt. No paid edition.</p>
+<p class="lede">infinimesh handles device identity, access and state. Your data goes to the tools you already use: Kafka, Postgres, InfluxDB, a webhook. No dashboard you have to adopt. The open source core is complete and free. No feature is held back for a paid tier.</p>
 <a class="btn p" href="#start">Run it in 5 commands</a><a class="btn" href="https://github.com/infinimesh/docs">Device examples</a><a class="btn" href="https://github.com/infinimesh/core">Source on GitHub</a>
 </section>
 
@@ -84,7 +84,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 
 <section id="access">
 <h2>Access is the data model</h2>
-<p>Accounts, namespaces and devices form a graph. Share a namespace with a customer at READ, and with their service partner at MANAGE. Each one sees their devices and nothing past them. This is in the open source core, not an enterprise tier.</p>
+<p>Accounts, namespaces and devices form a graph. Share a namespace with a customer at READ, and with their service partner at MANAGE. Each one sees their devices and nothing past them. This is in the open source core, not a paid tier.</p>
 <figure aria-label="Permission graph">
 <svg viewBox="0 0 1000 260" role="img"><title>Permission graph: maker account owns namespaces; customer and partner get shares</title>
 <rect class="a" x="400" y="10" width="200" height="50" rx="8"/><text x="500" y="41" text-anchor="middle">Maker account (owner)</text>
@@ -134,7 +134,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <section id="compare">
 <h2>How it compares</h2>
 <table><tr><th>Feature</th><th>infinimesh</th><th>ThingsBoard CE</th><th>Magistrala CE</th><th>EMQX</th></tr>
-<tr><td>License</td><td>Apache-2.0, no paid edition</td><td>Apache-2.0, paid PE</td><td>Apache-2.0, paid EE</td><td>BSL for recent versions</td></tr>
+<tr><td>License</td><td>Apache-2.0, complete core, nothing held back</td><td>Apache-2.0, paid PE</td><td>Apache-2.0, paid EE</td><td>BSL for recent versions</td></tr>
 <tr><td>Per-customer device access</td><td>Graph in core</td><td>Customer hierarchy in PE</td><td>Yes</td><td>No device registry</td></tr>
 <tr><td>Device shadow</td><td>Yes</td><td>Attributes</td><td>No</td><td>No</td></tr>
 <tr><td>Dashboards and rules</td><td>No, use your tools</td><td>Yes</td><td>Moved to EE</td><td>Rules engine</td></tr>
