@@ -3,146 +3,155 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>infinimesh — open IoT platform</title>
-<meta name="description" content="Open-source device registry, digital-twin shadow, and MQTT platform. Apache-2.0. Run it with Docker Compose or Kubernetes.">
-<link rel="icon" href="images/favico.webp" type="image/webp">
-<link rel="stylesheet" href="css/site.css">
+<title>infinimesh: the open source device layer for the stack you already run</title>
+<meta name="description" content="infinimesh is an Apache-2.0, self-hosted IoT backend in Go. Device identity, per-customer and per-partner access, shadow state, MQTT 3.1.1/5 and HTTP. Addons stream to Kafka, Postgres, InfluxDB, webhooks and more.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://infinimesh.org/">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="infinimesh">
+<meta property="og:title" content="infinimesh: the device layer for the stack you already run">
+<meta property="og:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. No paid edition.">
+<meta property="og:url" content="https://infinimesh.org/">
+<meta property="og:image" content="https://infinimesh.org/social/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="infinimesh: the device layer for the stack you already run. Apache-2.0.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="infinimesh: the device layer for the stack you already run">
+<meta name="twitter:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. No paid edition.">
+<meta name="twitter:image" content="https://infinimesh.org/social/twitter-card.png">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<script type="application/ld+json">
+[
+{"@context":"https://schema.org","@type":"Organization","@id":"https://infinimesh.org/#org","name":"infinimesh","url":"https://infinimesh.org/","logo":"https://infinimesh.org/images/logo_03.png","sameAs":["https://github.com/infinimesh"]},
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is there a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
+{"@type":"Question","name":"Can devices send data without MQTT?","acceptedAnswer":{"@type":"Answer","text":"Yes. Devices can POST state over HTTP with a device token. It lands in the same shadow as MQTT and reaches the same addons."}},
+{"@type":"Question","name":"Does infinimesh include dashboards?","acceptedAnswer":{"@type":"Answer","text":"No. infinimesh streams device data through addons to tools you already run, such as Kafka, Postgres, InfluxDB or a webhook. Use Grafana or your own app on top."}},
+{"@type":"Question","name":"Does infinimesh make my product EU Data Act compliant?","acceptedAnswer":{"@type":"Answer","text":"No software does that by itself. infinimesh gives you an access model where each customer and partner sees only their devices, which helps you build data access."}}]}
+]
+</script>
+<style>
+:root{--bg:#fff;--fg:#14171c;--mute:#5a6270;--line:#d9dde3;--card:#f5f7f9;--acc:#0b7a75;--acc2:#c2410c;--node:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1116;--fg:#e8ebef;--mute:#9aa3ae;--line:#2a313b;--card:#161b22;--acc:#2dd4bf;--acc2:#fb923c;--node:#0e1116}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--acc)}header,main,footer{max-width:1080px;margin:0 auto;padding:0 24px}
+header{display:flex;justify-content:space-between;align-items:center;height:64px;border-bottom:1px solid var(--line)}
+.brand{font-weight:700;font-size:20px;color:var(--fg);text-decoration:none}nav a{margin-left:18px;color:var(--mute);text-decoration:none;font-size:15px}
+section{padding:56px 0;border-bottom:1px solid var(--line)}h1{font-size:44px;line-height:1.1;margin:.2em 0 .4em;max-width:800px}h2{font-size:28px;margin:0 0 16px}h3{margin:0 0 6px;font-size:18px}
+.kicker{color:var(--acc);font-weight:600;font-size:14px;letter-spacing:.04em;text-transform:uppercase}.lede{font-size:20px;color:var(--mute);max-width:720px}
+.btn{display:inline-block;padding:10px 18px;border:1px solid var(--line);border-radius:6px;text-decoration:none;color:var(--fg);margin:8px 8px 0 0}.btn.p{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px}
+.card p{margin:0;color:var(--mute);font-size:15px}figure{margin:24px 0}svg{width:100%;height:auto}
+svg text{fill:var(--fg);font:14px system-ui,sans-serif}svg .m{fill:var(--mute);font-size:12px}svg .b{fill:var(--node);stroke:var(--line);stroke-width:1.5}svg .a{fill:var(--node);stroke:var(--acc);stroke-width:2}svg .o{fill:var(--node);stroke:var(--acc2);stroke-width:2}svg .l{stroke:var(--mute);stroke-width:1.5;fill:none;marker-end:url(#ar)}svg .s{stroke:var(--acc2);stroke-dasharray:5 4;stroke-width:1.5;fill:none}
+table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;overflow:auto;font-size:14px}.tag{font-size:12px;color:var(--mute)}
+.brand img{filter:invert(1) hue-rotate(180deg)}@media (prefers-color-scheme:dark){.brand img{filter:none}}
+footer{padding:32px 24px;color:var(--mute);font-size:14px}
+</style>
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="./">
-    <img class="wordmark" src="images/logo_03.png" alt="infinimesh">
-  </a>
-  <nav>
-    <a href="#product">Product</a>
-    <a href="#uses">Uses</a>
-    <a href="#install">Install</a>
-    <a class="nav-git" href="https://github.com/infinimesh/core">Source</a>
-  </nav>
-</header>
-
+<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
 <main>
-  <section class="hero">
-    <p class="kicker">Apache-2.0 · device registry · MQTT · digital twin</p>
-    <h1>Connect anything.<br>Change everything.</h1>
-    <p class="lede">An open IoT platform for a fleet you can name, authorize, and shadow. One tenant graph. REST, gRPC, and Connect on the same API. No vendor lock-in.</p>
-    <div class="actions">
-      <a class="btn primary" href="#install">Get started</a>
-      <a class="btn" href="https://github.com/infinimesh/core/blob/main/docs/installation.md">Installation guide</a>
-    </div>
-  </section>
+<section>
+<p class="kicker">Apache-2.0 · self-hosted · written in Go</p>
+<h1>The device layer for the stack you already run.</h1>
+<p class="lede">infinimesh handles device identity, access and state. Your data goes to the tools you already use: Kafka, Postgres, InfluxDB, a webhook. No dashboard you have to adopt. No paid edition.</p>
+<a class="btn p" href="#start">Run it in 5 commands</a><a class="btn" href="https://github.com/infinimesh/docs">Device examples</a><a class="btn" href="https://github.com/infinimesh/core">Source on GitHub</a>
+</section>
 
-  <section id="product" class="block">
-    <div class="split">
-      <div>
-        <h2>What it is</h2>
-        <p>Smart devices should use a resource when it is needed, and stay quiet when it is not. infinimesh is the backbone for that fleet: register a device, decide who can see it, and keep a live shadow of what it last reported.</p>
-        <p>The project is open source, Apache-2.0, with no private fork of the platform. The same tree runs on one machine with Docker Compose, or in a cluster with the Kubernetes operator.</p>
-      </div>
-      <ul class="facts">
-        <li><strong>Registry</strong><span>Namespaces, accounts, and devices, with access down to a single device.</span></li>
-        <li><strong>Shadow</strong><span>Desired and reported state for every device, over MQTT.</span></li>
-        <li><strong>Auth</strong><span>Tokens on port 1883. Client certificates on port 8883.</span></li>
-        <li><strong>APIs</strong><span>REST, gRPC, and Connect from one service.</span></li>
-      </ul>
-    </div>
-  </section>
+<section id="how">
+<h2>How it works</h2>
+<p>Devices connect over MQTT 3.1.1 or 5, or send state over HTTP. The bridge checks the device certificate and topic. The shadow keeps reported and desired state. Addons read the stream and write it where you want it.</p>
+<figure aria-label="Data flow from device to your stack">
+<svg viewBox="0 0 1000 230" role="img"><title>Data flow: device, MQTT bridge or HTTP API, shadow, addons, your stack</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:#888"/></marker></defs>
+<rect class="b" x="10" y="70" width="150" height="80" rx="8"/><text x="85" y="104" text-anchor="middle">Devices</text><text class="m" x="85" y="124" text-anchor="middle">ESP32, Pico W, gateways</text>
+<rect class="a" x="210" y="30" width="170" height="64" rx="8"/><text x="295" y="58" text-anchor="middle">MQTT bridge</text><text class="m" x="295" y="77" text-anchor="middle">3.1.1 / 5, QoS 0-2, TLS 8883</text>
+<rect class="a" x="210" y="126" width="170" height="64" rx="8"/><text x="295" y="154" text-anchor="middle">HTTP API</text><text class="m" x="295" y="173" text-anchor="middle">REST, gRPC, Connect</text>
+<rect class="a" x="430" y="60" width="170" height="100" rx="8"/><text x="515" y="96" text-anchor="middle">Registry + shadow</text><text class="m" x="515" y="116" text-anchor="middle">identity, permission graph</text><text class="m" x="515" y="134" text-anchor="middle">reported / desired state</text>
+<rect class="o" x="650" y="70" width="140" height="80" rx="8"/><text x="720" y="104" text-anchor="middle">Addons</text><text class="m" x="720" y="124" text-anchor="middle">separate processes</text>
+<rect class="b" x="840" y="20" width="150" height="190" rx="8"/><text x="915" y="50" text-anchor="middle">Your stack</text>
+<text class="m" x="915" y="80" text-anchor="middle">Kafka / KafScale</text><text class="m" x="915" y="102" text-anchor="middle">Postgres / Timescale</text><text class="m" x="915" y="124" text-anchor="middle">InfluxDB</text><text class="m" x="915" y="146" text-anchor="middle">Webhook</text><text class="m" x="915" y="168" text-anchor="middle">MQTT broker</text><text class="m" x="915" y="190" text-anchor="middle">S3, Snowflake, more</text>
+<path class="l" d="M160 100L208 64"/><path class="l" d="M160 120L208 158"/><path class="l" d="M380 62L428 95"/><path class="l" d="M380 158L428 128"/><path class="l" d="M600 110L648 110"/><path class="l" d="M790 110L838 110"/>
+<path class="s" d="M515 160 C515 215 85 215 85 150"/><text class="m" x="300" y="222" text-anchor="middle">desired state back to the device</text>
+</svg></figure>
+</section>
 
-  <section class="block">
-    <h2>Two pillars</h2>
-    <div class="pillars">
-      <article>
-        <h3>Asset management</h3>
-        <p>See the fleet as a graph that matches the organization: groups, projects, and the devices inside them. Permissions follow that graph, so a team sees its own assets and nothing past them. Gateways, edge boxes, and devices that dial in directly sit in the same registry.</p>
-      </article>
-      <article>
-        <h3>Device security</h3>
-        <p>Provision a certificate when the device is built, and present it when the device connects. The broker on port 8883 requires a client certificate and checks it against the device record. Tokens cover the simpler path on plaintext MQTT. Transport is TLS 1.2 and 1.3.</p>
-      </article>
-    </div>
-  </section>
+<section id="access">
+<h2>Access is the data model</h2>
+<p>Accounts, namespaces and devices form a graph. Share a namespace with a customer at READ, and with their service partner at MANAGE. Each one sees their devices and nothing past them. This is in the open source core, not an enterprise tier.</p>
+<figure aria-label="Permission graph">
+<svg viewBox="0 0 1000 260" role="img"><title>Permission graph: maker account owns namespaces; customer and partner get shares</title>
+<rect class="a" x="400" y="10" width="200" height="50" rx="8"/><text x="500" y="41" text-anchor="middle">Maker account (owner)</text>
+<rect class="b" x="170" y="100" width="200" height="50" rx="8"/><text x="270" y="131" text-anchor="middle">Namespace: Customer A</text>
+<rect class="b" x="630" y="100" width="200" height="50" rx="8"/><text x="730" y="131" text-anchor="middle">Namespace: Customer B</text>
+<path class="l" d="M480 60L300 98"/><path class="l" d="M520 60L700 98"/>
+<g><rect class="b" x="110" y="200" width="100" height="40" rx="6"/><text x="160" y="225" text-anchor="middle">Device 1</text><rect class="b" x="230" y="200" width="100" height="40" rx="6"/><text x="280" y="225" text-anchor="middle">Device 2</text><rect class="b" x="680" y="200" width="100" height="40" rx="6"/><text x="730" y="225" text-anchor="middle">Device 3</text></g>
+<path class="l" d="M250 150L165 198"/><path class="l" d="M280 150L280 198"/><path class="l" d="M730 150L730 198"/>
+<rect class="o" x="10" y="100" width="120" height="50" rx="8"/><text x="70" y="124" text-anchor="middle">Customer A</text><text class="m" x="70" y="141" text-anchor="middle">READ</text>
+<rect class="o" x="400" y="190" width="200" height="50" rx="8"/><text x="500" y="214" text-anchor="middle">Service partner</text><text class="m" x="500" y="231" text-anchor="middle">MANAGE on A, READ on B</text>
+<path class="s" d="M130 125L168 125"/><path class="s" d="M450 190L340 150"/><path class="s" d="M550 190L660 150"/>
+<rect class="o" x="870" y="100" width="120" height="50" rx="8"/><text x="930" y="124" text-anchor="middle">Customer B</text><text class="m" x="930" y="141" text-anchor="middle">READ</text><path class="s" d="M870 125L832 125"/>
+</svg></figure>
+<p class="tag">Relevant if you sell connected products in the EU and need to give customers access to their device data under the Data Act. infinimesh gives you the access model. It does not make you compliant by itself.</p>
+</section>
 
-  <section class="block">
-    <h2>In the platform</h2>
-    <div class="grid">
-      <article>
-        <h3>Device management</h3>
-        <p>Namespaces and devices, with permissions that stop at the device you name.</p>
-      </article>
-      <article>
-        <h3>Device shadow</h3>
-        <p>Desired and reported state, both ways, for each device in the fleet.</p>
-      </article>
-      <article>
-        <h3>MQTT bridge</h3>
-        <p>MQTT 3 and 5 into the shadow. Plain on 1883, TLS on 8883.</p>
-      </article>
-      <article>
-        <h3>Console and CLI</h3>
-        <p>A web console for accounts and devices. The <code>inf</code> command for the same API.</p>
-      </article>
-      <article>
-        <h3>Connectors</h3>
-        <p>Addons sink the fleet into Elasticsearch, Snowflake, SAP HANA, timeseries, or object storage. They are not part of the platform process.</p>
-      </article>
-      <article>
-        <h3>Your infrastructure</h3>
-        <p>Docker Compose on one host. Kubernetes through the platform operator and the cluster recipes.</p>
-      </article>
-    </div>
-  </section>
+<section>
+<h2>Who it is for</h2>
+<div class="grid">
+<div class="card"><h3>Device makers</h3><p>You run your own backend and need each customer, and their partners, to see only their devices.</p></div>
+<div class="card"><h3>Teams with a data stack</h3><p>You already have Kafka, Postgres or a warehouse and want devices to feed it, not a second dashboard.</p></div>
+<div class="card"><h3>Self-hosters</h3><p>You want the backend on your servers, under Apache-2.0, without a price list per device.</p></div>
+</div>
+<h2 style="margin-top:36px">When not to use it</h2>
+<div class="grid">
+<div class="card"><h3>You want an all-in-one UI</h3><p>No dashboards or rule engine. Use ThingsBoard, or Grafana on top of an addon.</p></div>
+<div class="card"><h3>You need OTA today</h3><p>Firmware updates are not built in yet.</p></div>
+<div class="card"><h3>You need an HA broker cluster now</h3><p>MQTT sessions live in bridge memory today. Multi-replica sessions are on the roadmap.</p></div>
+</div>
+</section>
 
-  <section id="uses" class="block">
-    <h2>Where it fits</h2>
-    <div class="uses">
-      <article>
-        <h3>Electric grids</h3>
-        <p>Long-lived assets on a low-voltage or high-voltage network: meters, transformers, switchgear. One registry for the fleet, a shadow for the last state, and permissions that follow the operating company.</p>
-      </article>
-      <article>
-        <h3>Renewables</h3>
-        <p>Wind, solar, biomass, and combined heat and power produce a steady stream of telemetry. The shadow holds the latest point. Addons carry history into a timeseries store or a warehouse when the business needs the archive.</p>
-      </article>
-      <article>
-        <h3>Automotive and mobile</h3>
-        <p>Vehicles, robots, and drones that connect over changing networks. Certificates identify the unit. The shadow keeps the last good report when the link drops and resumes.</p>
-      </article>
-      <article>
-        <h3>Industry</h3>
-        <p>Lines and sites that are far apart, on LTE, site networks, or a gateway at the edge. Devices report into MQTT. Operators read the twin and send desired state back without a custom broker per plant.</p>
-      </article>
-    </div>
-  </section>
+<section id="addons">
+<h2>Addons</h2>
+<p>Each addon is a small separate service that reads device state and writes it out. Writing your own is mostly reading one stream. <a href="https://github.com/infinimesh/addons">See the addons repo</a>.</p>
+<div class="grid">
+<div class="card"><h3>Kafka / KafScale</h3><p>JSON per update, keyed by device ID.</p></div>
+<div class="card"><h3>Postgres / TimescaleDB</h3><p>Rows per state update.</p></div>
+<div class="card"><h3>InfluxDB 2 and 3</h3><p>Points per reported field.</p></div>
+<div class="card"><h3>Webhook</h3><p>HTTP POST with retries.</p></div>
+<div class="card"><h3>MQTT bridge</h3><p>Forward to a broker you already run.</p></div>
+<div class="card"><h3>RedisTimeSeries</h3><p>Short history next to the shadow.</p></div>
+<div class="card"><h3>Elasticsearch, Snowflake, SAP HANA</h3><p>Search and warehouse sinks.</p></div>
+<div class="card"><h3>S3, GCS, Azure Blob</h3><p>Files per device in object storage.</p></div>
+</div>
+</section>
 
-  <section id="install" class="block install">
-    <div>
-      <h2>Install</h2>
-      <p>One machine, with Docker and Docker Compose. Go 1.24 or newer if you want the CLI.</p>
-      <pre><code>git clone https://github.com/infinimesh/core.git
+<section id="compare">
+<h2>How it compares</h2>
+<table><tr><th>Feature</th><th>infinimesh</th><th>ThingsBoard CE</th><th>Magistrala CE</th><th>EMQX</th></tr>
+<tr><td>License</td><td>Apache-2.0, no paid edition</td><td>Apache-2.0, paid PE</td><td>Apache-2.0, paid EE</td><td>BSL for recent versions</td></tr>
+<tr><td>Per-customer device access</td><td>Graph in core</td><td>Customer hierarchy in PE</td><td>Yes</td><td>No device registry</td></tr>
+<tr><td>Device shadow</td><td>Yes</td><td>Attributes</td><td>No</td><td>No</td></tr>
+<tr><td>Dashboards and rules</td><td>No, use your tools</td><td>Yes</td><td>Moved to EE</td><td>Rules engine</td></tr>
+<tr><td>Stack</td><td>Go services</td><td>Java</td><td>Go, many services</td><td>Erlang</td></tr></table>
+<p class="tag">Sources: <a href="https://thingsboard.io/ce-vs-pe-diff/">ThingsBoard CE vs PE</a>, <a href="https://www.absmach.eu/blog/magistrala-community-edition-enterprise-edition/">Magistrala CE/EE</a>, <a href="https://www.emqx.com/en/blog/adopting-business-source-license-to-accelerate-mqtt-and-ai-innovation">EMQX license</a>. Checked 2026-10-12.</p>
+</section>
+
+<section id="start">
+<h2>Quickstart</h2>
+<p>One machine with Docker Compose. First login is <code>infinimesh</code> / <code>infinimesh</code>. Change it.</p>
+<pre><code>git clone https://github.com/infinimesh/core.git
 cd core
 cp .env.example .env
 docker compose up -d
 go install github.com/infinimesh/inf-cli@main</code></pre>
-      <p class="note">Local default domain is <code>infinimesh.local</code>. On a public name, Traefik or Caddy with Let's Encrypt is in the <a href="https://github.com/infinimesh/core/blob/main/docs/public-tls.md">public TLS guide</a>. A cluster install starts from the <a href="https://github.com/infinimesh/platform-operator">platform operator</a> and a recipe in <a href="https://github.com/infinimesh/k8s">k8s</a>.</p>
-    </div>
-  </section>
-
-  <section class="block">
-    <h2>Repositories</h2>
-    <ul class="repos">
-      <li><a href="https://github.com/infinimesh/core">core</a><span>APIs, shadow, MQTT bridge, console, Docker Compose</span></li>
-      <li><a href="https://github.com/infinimesh/proto">proto</a><span>Schemas and generated stubs</span></li>
-      <li><a href="https://github.com/infinimesh/inf-cli">inf-cli</a><span>The <code>inf</code> command</span></li>
-      <li><a href="https://github.com/infinimesh/addons">addons</a><span>Elasticsearch, Snowflake, SAP HANA, timeseries, cloud storage</span></li>
-      <li><a href="https://github.com/infinimesh/platform-operator">platform-operator</a><span>Kubernetes operator</span></li>
-      <li><a href="https://github.com/infinimesh/k8s">k8s</a><span>Cluster recipes</span></li>
-    </ul>
-  </section>
+<p>Then connect a device: <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-mqtt">ESP32 over MQTT</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-http">ESP32 over HTTP</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/picow-mqtt">Pico W</a>, or <a href="https://github.com/infinimesh/docs/tree/main/examples/curl">curl</a>. Small boards that time out on TLS: read the <a href="https://github.com/infinimesh/docs/blob/main/guides/small-devices-tls.md">small-device TLS guide</a>.</p>
+</section>
 </main>
-
-<footer>
-  <p>Apache-2.0. <a href="https://github.com/infinimesh">github.com/infinimesh</a></p>
-  <p class="fine">2018–2026, the infinimesh open source project.</p>
-</footer>
-</body>
-</html>
+<footer>Apache-2.0. <a href="https://github.com/infinimesh">github.com/infinimesh</a> · <a href="/llms.txt">llms.txt</a> · 2018 to 2026, the infinimesh open source project.</footer>
+</body></html>
