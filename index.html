@@ -55,7 +55,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
+<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="/api/">API</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
 <main>
 <section>
 <p class="kicker">Apache-2.0 · self-hosted · written in Go</p>
@@ -66,7 +66,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 
 <section id="how">
 <h2>How it works</h2>
-<p>Devices connect over MQTT 3.1.1 or 5, or send state over HTTP. The bridge checks the device certificate and topic. The shadow keeps reported and desired state. Addons read the stream and write it where you want it.</p>
+<p>Devices connect over MQTT 3.1.1 or 5, or send state over HTTP with <code>POST /devices/states</code> and a device token. The bridge checks the device certificate and topic. The shadow keeps reported and desired state. Addons read the stream and write it where you want it.</p>
 <figure aria-label="Data flow from device to your stack">
 <svg viewBox="0 0 1000 230" role="img"><title>Data flow: device, MQTT bridge or HTTP API, shadow, addons, your stack</title>
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:#888"/></marker></defs>
@@ -149,9 +149,10 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 cd core
 cp .env.example .env
 docker compose up -d
-go install github.com/infinimesh/inf-cli@main</code></pre>
+brew tap infinimesh/inf-cli https://github.com/infinimesh/inf-cli
+brew install inf</code></pre>
 <p>Then connect a device: <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-mqtt">ESP32 over MQTT</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/esp32-http">ESP32 over HTTP</a>, <a href="https://github.com/infinimesh/docs/tree/main/examples/picow-mqtt">Pico W</a>, or <a href="https://github.com/infinimesh/docs/tree/main/examples/curl">curl</a>. Small boards that time out on TLS: read the <a href="https://github.com/infinimesh/docs/blob/main/guides/small-devices-tls.md">small-device TLS guide</a>.</p>
 </section>
 </main>
-<footer>Apache-2.0. <a href="https://github.com/infinimesh">github.com/infinimesh</a> · <a href="/llms.txt">llms.txt</a> · 2018 to 2026, the infinimesh open source project.</footer>
+<footer>Apache-2.0. <a href="https://github.com/infinimesh">github.com/infinimesh</a> · <a href="/api/">API</a> · <a href="/llms.txt">llms.txt</a> · 2018 to 2026, the infinimesh open source project.</footer>
 </body></html>
