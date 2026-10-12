@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>infinimesh API reference (beta)</title>
-<meta name="description" content="REST reference for the infinimesh API: accounts, namespaces, devices, device state, tokens and plugins. Generated from the proto schemas. Beta until v1.">
+<title>infinimesh API reference (v1)</title>
+<meta name="description" content="REST reference for the infinimesh API: accounts, namespaces, devices, device state, tokens and plugins. Generated from the proto schemas. Stable v1.">
 <link rel="canonical" href="https://infinimesh.org/api/">
 <link rel="icon" href="/favicon.png">
 <link rel="stylesheet" href="/api/swagger-ui.css">
-<style>body{margin:0;font-family:system-ui,sans-serif}.top{padding:16px 24px;border-bottom:1px solid #ddd}.top a{color:#0b5;text-decoration:none;margin-right:16px}.top p{margin:8px 0 0;color:#444;max-width:820px;line-height:1.5}.badge{background:#fd3;color:#000;font-size:13px;padding:2px 8px;border-radius:4px;margin-left:8px}</style>
+<style>body{margin:0;font-family:system-ui,sans-serif}.top{padding:16px 24px;border-bottom:1px solid #ddd}.top a{color:#0b5;text-decoration:none;margin-right:16px}.top p{margin:8px 0 0;color:#444;max-width:820px;line-height:1.5}.badge{background:#0b7a75;color:#fff;font-size:13px;padding:2px 8px;border-radius:4px;margin-left:8px}</style>
 </head>
 <body>
 <div class="top">
 <a href="/"><strong>infinimesh</strong></a><a href="/#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="https://github.com/infinimesh/proto">proto</a>
-<h1 style="font-size:24px;margin:12px 0 0">API reference<span class="badge">beta</span></h1>
-<p>This is the REST view of the infinimesh API. The same calls exist over gRPC and Connect. The spec is built from <a href="https://github.com/infinimesh/proto">infinimesh/proto</a>. It is beta and may change until the v1 API is released. Devices can send state with <code>POST /devices/states</code> and a device token. Get a device token with <code>POST /devices/token</code> (user login is <code>POST /token</code>), then send it as <code>Authorization: Bearer</code>. Download the <a href="/api/openapi.json">OpenAPI 2.0 spec</a>.</p>
+<h1 style="font-size:24px;margin:12px 0 0">API reference<span class="badge">v1 stable</span></h1>
+<p>This is the REST view of the infinimesh API. The same calls exist over gRPC and Connect. The spec is built from <a href="https://github.com/infinimesh/proto">infinimesh/proto</a>. The v1 API is stable: see the <a href="https://github.com/infinimesh/core/blob/main/docs/api-versioning.md">versioning policy</a>. Log in with <code>POST /v1/token</code> and get a device token with <code>POST /v1/devices/token</code>, then send it as <code>Authorization: Bearer</code>. Devices send their own JSON with <code>POST /v1/ingest</code> (16 KB max, 60 requests a minute) and read desired state with <code>GET /v1/ingest/desired</code>. Addons follow <code>GET /v1/devices/states/stream</code> per account or namespace. Download the <a href="/api/openapi.json">OpenAPI 2.0 spec</a>.</p>
 </div>
 <div id="swagger"></div>
 <script src="/api/swagger-ui-bundle.js" defer></script>
