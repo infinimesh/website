@@ -8,6 +8,7 @@ infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster y
 - [Installation](https://github.com/infinimesh/core/blob/main/docs/installation.md): Docker Compose on one machine
 - [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login
 - [Public TLS](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): running on a public domain
+- [API reference (beta)](https://infinimesh.org/api/): REST view of the API, OpenAPI spec at https://infinimesh.org/api/openapi.json. Devices send state with POST /devices/states and a device token.
 - [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
 
 ## Code

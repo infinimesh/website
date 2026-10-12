@@ -3,6 +3,8 @@ name: pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,6 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Refresh API spec from infinimesh/proto
+        run: |
+          if curl -fsSL https://raw.githubusercontent.com/infinimesh/proto/main/api.swagger.json -o /tmp/spec.json; then
+            jq '.info={title:"infinimesh API (beta)",version:"v3 beta",description:"REST mapping of the infinimesh gRPC and Connect API, generated from github.com/infinimesh/proto. Beta until the v1 API is released."}' /tmp/spec.json > api/openapi.json
+          else
+            echo "proto spec not reachable, keeping the committed copy"
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
