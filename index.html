@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>infinimesh: the open source device layer for the stack you already run</title>
+<title>infinimesh: the open source device layer for your IoT and AI stack</title>
 <meta name="description" content="infinimesh is an Apache-2.0, self-hosted IoT backend in Go. Device identity, per-customer and per-partner access, shadow state, MQTT 3.1.1/5 and HTTP. Addons stream to Kafka, Postgres, InfluxDB, webhooks and more.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.png" type="image/png">
@@ -12,22 +12,22 @@
 <meta name="color-scheme" content="light dark">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="infinimesh">
-<meta property="og:title" content="infinimesh: the device layer for the stack you already run">
-<meta property="og:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
+<meta property="og:title" content="infinimesh: the device layer for your IoT and AI stack">
+<meta property="og:description" content="The device layer for your IoT and AI stack. Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
 <meta property="og:url" content="https://infinimesh.org/">
 <meta property="og:image" content="https://infinimesh.org/social/og-image.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="infinimesh: the device layer for the stack you already run. Apache-2.0.">
+<meta property="og:image:alt" content="infinimesh: the device layer for your IoT and AI stack. Apache-2.0.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="infinimesh: the device layer for the stack you already run">
-<meta name="twitter:description" content="Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
+<meta name="twitter:title" content="infinimesh: the device layer for your IoT and AI stack">
+<meta name="twitter:description" content="The device layer for your IoT and AI stack. Apache-2.0, self-hosted IoT backend. Device identity, access per customer and partner, shadow state, MQTT and HTTP. The open source core is complete and free.">
 <meta name="twitter:image" content="https://infinimesh.org/social/twitter-card.png">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
 <script type="application/ld+json">
 [
 {"@context":"https://schema.org","@type":"Organization","@id":"https://infinimesh.org/#org","name":"infinimesh","url":"https://infinimesh.org/","logo":"https://infinimesh.org/images/logo_03.png","sameAs":["https://github.com/infinimesh"]},
-{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"The device layer for your IoT and AI stack. Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","description":"The device layer for your IoT and AI stack.","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is any feature held back for a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. The open source core is complete and free. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
 {"@type":"Question","name":"Can devices send data without MQTT?","acceptedAnswer":{"@type":"Answer","text":"Yes. Devices can send their own JSON with POST /v1/ingest and a device token, and read desired state with GET /v1/ingest/desired. It lands in the same shadow as MQTT and reaches the same addons."}},
@@ -56,11 +56,11 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="/api/">API</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
+<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#ai">AI</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="/api/">API</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
 <main>
 <section>
 <p class="kicker">Apache-2.0 · self-hosted · written in Go</p>
-<h1>The device layer for the stack you already run.</h1>
+<h1>The device layer for your IoT and AI stack.</h1>
 <p class="lede">infinimesh handles device identity, access and state. Your data goes to the tools you already use: Kafka, Postgres, InfluxDB, a webhook. No dashboard you have to adopt. The open source core is complete and free. No feature is held back for a paid tier.</p>
 <a class="btn p" href="#start">Run it in 5 commands</a><a class="btn" href="https://github.com/infinimesh/docs">Device examples</a><a class="btn" href="https://github.com/infinimesh/core">Source on GitHub</a>
 </section>
@@ -131,6 +131,17 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <div class="card"><h3>Elasticsearch, Snowflake, SAP HANA</h3><p>Search and warehouse sinks.</p></div>
 <div class="card"><h3>S3, GCS, Azure Blob</h3><p>Files per device in object storage.</p></div>
 </div>
+</section>
+
+<section id="ai">
+<h2>AI ready</h2>
+<p>AI agents and LLMs need device data with the same access rules as people. infinimesh has that model already. Device state will be available to AI agents over MCP and to any LLM through addons, scoped by the same permission graph. An agent sees only the devices its token can see.</p>
+<p>You can run models locally with vLLM or Ollama, so device data stays on your servers. Hosted APIs work too, if you choose them.</p>
+<div class="grid">
+<div class="card"><h3>MCP server <span class="tag">coming soon</span></h3><p>Read device state and set desired state from an AI agent, within the token's permissions. Not built yet.</p></div>
+<div class="card"><h3>LLM addon <span class="tag">coming soon</span></h3><p>Send device state to any OpenAI-compatible API: vLLM, Ollama, Mistral, OpenAI, Anthropic, Gemini. Not built yet.</p></div>
+</div>
+<p>Neither exists today. Until they ship, use the webhook or MQTT bridge addon to feed your own agent.</p>
 </section>
 
 <section id="compare">
