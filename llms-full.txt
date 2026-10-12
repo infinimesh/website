@@ -1,0 +1,368 @@
+# infinimesh
+
+> infinimesh is an Apache-2.0, self-hosted IoT backend written in Go. It is the device layer for the stack you already run: device identity, access as a permission graph (per customer and per partner), reported and desired shadow state, MQTT 3.1.1/5 and HTTP ingest. Addons stream device data to Kafka, KafScale, Postgres/TimescaleDB, InfluxDB, webhooks, an MQTT broker, Elasticsearch, Snowflake, SAP HANA, S3, GCS and Azure Blob. There is no paid edition.
+
+infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
+
+## Docs
+- [Installation](https://github.com/infinimesh/core/blob/main/docs/installation.md): Docker Compose on one machine
+- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login
+- [Public TLS](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): running on a public domain
+- [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
+
+## Code
+- [core](https://github.com/infinimesh/core): API, registry, shadow, MQTT bridge, console
+- [addons](https://github.com/infinimesh/addons): data sinks and the write-an-addon guide
+- [inf-cli](https://github.com/infinimesh/inf-cli): the inf command
+- [proto](https://github.com/infinimesh/proto): API schemas
+
+## Optional
+- [Kubernetes operator](https://github.com/infinimesh/platform-operator)
+- [Cluster recipes](https://github.com/infinimesh/k8s)
+
+---
+Source: https://github.com/infinimesh/core
+# Infinimesh
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/infinimesh/core)](https://goreportcard.com/report/github.com/infinimesh/core)
+[![Release](https://img.shields.io/github/v/release/infinimesh/core)](https://github.com/infinimesh/core/releases)
+[![License](https://img.shields.io/github/license/infinimesh/core)](LICENSE)
+
+Infinimesh is an open source IoT platform you run yourself. It gives you a device registry, device auth, a device shadow (digital twin), an MQTT bridge, and REST, gRPC and Connect APIs. It runs on Docker Compose or Kubernetes.
+
+What you get:
+
+- MQTT 3.1.1 and 5, with TLS 1.2 and 1.3
+- Device shadow with reported and desired state
+- Messages from device to cloud and from cloud to device
+- Multi-tenant namespaces with graph-based access control
+- A web console
+- Docker Compose and Kubernetes setups
+
+The APIs are beta. They may still change between releases.
+
+## Quickstart
+
+You need Docker with Docker Compose.
+
+```bash
+git clone https://github.com/infinimesh/core.git
+cd core
+cp .env.example .env
+docker compose up -d
+```
+
+Images come from GHCR. Set `INFINIMESH_VERSION` in `.env` to pin a release.
+
+`BASE_DOMAIN` in `.env` is the root host for all services. The default is `infinimesh.local`. Set it to `127.0.0.1.nip.io` and you do not need to touch `/etc/hosts`. If you keep the default, add these names to `/etc/hosts`: `console`, `api`, `traefik` and `media`, each followed by `.infinimesh.local`.
+
+Then open:
+
+- Console: `http://console.${BASE_DOMAIN}`
+- API (gRPC, Connect, REST): `http://api.${BASE_DOMAIN}`
+- Traefik dashboard: `http://traefik.${BASE_DOMAIN}`
+
+ArangoDB and RabbitMQ stay on the Compose network. Their admin UIs are not routed through Traefik or Caddy. Redis `6379` and AMQP `5672` are not published on the host. The public overlay can bind AMQP to `127.0.0.1`.
+
+Default logins. Change them before you expose anything.
+
+- Platform admin: user `infinimesh`, password from `INF_DEFAULT_ROOT_PASS` (`infinimesh` by default)
+- ArangoDB, inside the Compose network: user `root`, password `openSesame`
+- RabbitMQ, inside the Compose network: `infinimesh` / `infinimesh` (from `.env`)
+
+MQTT listens on 1883 (plain) and 8883 (TLS with `hack/server.crt` and `hack/server.key`).
+
+## When not to use it
+
+- You want a fully managed cloud service and do not want to run servers.
+- You need stable, frozen APIs today. Ours are still beta.
+- You only have a few devices and one user. A plain MQTT broker is simpler.
+
+## CLI (inf)
+
+The CLI lives in [infinimesh/inf-cli](https://github.com/infinimesh/inf-cli). The easiest way to get it on macOS or Linux is Homebrew:
+
+```bash
+brew tap infinimesh/inf-cli https://github.com/infinimesh/inf-cli
+brew install inf
+```
+
+New Homebrew versions ask you to trust a tap before they load it. If `brew install` says the tap is untrusted, run `brew trust infinimesh/inf-cli` and try again.
+
+Prebuilt archives for Linux, macOS and Windows are on the [releases page](https://github.com/infinimesh/inf-cli/releases).
+
+You can also install it with Go 1.27 or newer:
+
+```bash
+go install github.com/infinimesh/inf-cli@latest
+```
+
+`go install` names the binary `inf-cli`. The docs call it `inf`, so add an alias or rename it:
+
+```bash
+mv "$(go env GOPATH)/bin/inf-cli" "$(go env GOPATH)/bin/inf"
+```
+
+Or build from source:
+
+```bash
+git clone https://github.com/infinimesh/inf-cli.git
+cd inf-cli
+go build -o inf .
+```
+
+A short session against the local stack:
+
+```bash
+API=http://api.${BASE_DOMAIN}:8000
+
+# log in as the admin account
+inf login --api "$API" --username infinimesh --password infinimesh --insecure
+
+# list namespaces and devices
+inf namespaces list
+inf devices list
+
+# issue a device token that may post state
+inf devices token <device-id> --allow-post > device.token
+
+# report state for the device
+inf devices state <device-id> --token "$(cat device.token)" --report '{"online":true,"temp":21.5}'
+```
+
+Create devices in the console, or with `inf devices create <template.json> --crt <cert.pem>`. Run `inf help` and `inf <command> --help` for all flags.
+
+The device token is for the API. MQTT needs a client certificate registered on the device. On 8883 the device sends the certificate. On 1883 the username is the device id and the password is the base64 SHA-256 fingerprint of the certificate, and basic auth must be turned on for the device. Topic rules, QoS, and session behaviour are in [docs/device-auth.md](docs/device-auth.md).
+
+```bash
+mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
+  -u <device-id> -P "$(base64 < fingerprint.bin)" \
+  -t devices/<device-id>/state/reported \
+  -m '{"temp":21.5}'
+```
+
+## Documentation
+
+- [docs/installation.md](docs/installation.md): prerequisites and Docker Compose setup
+- [docs/public-tls.md](docs/public-tls.md): Traefik or Caddy with Let's Encrypt on a public domain
+- [docs/device-auth.md](docs/device-auth.md): device tokens, certificates and MQTT
+- [api.swagger.json](api.swagger.json): API schema
+
+## Checks
+
+`make commit-check` runs `fmt`, `race`, `test-fuzz`, and `code-ql-gate`. `fmt` writes Go files that `gofmt` would change. `race` is `go test -race`. `test-fuzz` runs each `Fuzz` target for `FUZZ_TIME` (default `30s`). `code-ql` runs the CodeQL CLI (`brew install --cask codeql`) and writes SARIF under `.tmp/codeql/`. The gate fails when a result is level `error`, ignoring paths under `vendor`. `jq` is required for the gate. Lower the Go database limit with `CODEQL_GO_RAM_MB` if the machine is tight. GitHub Actions runs the same race and fuzz steps, and CodeQL on pull requests with `security-extended` and `security-and-quality`.
+
+## Releases
+
+Current version: `v3.2.0`. See [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/infinimesh/core/releases).
+
+A tag `vX.Y.Z` or `vX.Y.Z-rN` on `main` publishes `ghcr.io/infinimesh/core/<service>` for `api`, `console`, `gateway`, `mqtt-bridge`, `pairing` and `shadow`. Each tag is also published as `:latest`. A revision tag also publishes the base version `:vX.Y.Z`. The GitHub release text is the matching `## [tag]` section in `CHANGELOG.md`. The same tag on [platform-operator](https://github.com/infinimesh/platform-operator) publishes `ghcr.io/infinimesh/platform-operator`.
+
+## Repositories
+
+- [core](https://github.com/infinimesh/core): this platform
+- [proto](https://github.com/infinimesh/proto): gRPC, Connect and OpenAPI schemas. Regenerate with `buf generate` there.
+- [inf-cli](https://github.com/infinimesh/inf-cli): the `inf` command
+- [platform-operator](https://github.com/infinimesh/platform-operator): Kubernetes operator
+- [k8s](https://github.com/infinimesh/k8s): cluster install recipes
+- [addons](https://github.com/infinimesh/addons): connectors for Redis streams, Elasticsearch, Snowflake, SAP HANA, RedisTimeSeries and cloud storage
+- [website](https://github.com/infinimesh/website): the site at [infinimesh.org](https://infinimesh.org/)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Questions and bugs go to [GitHub issues](https://github.com/infinimesh/core/issues).
+
+## License
+
+Apache 2.0. See [LICENSE](LICENSE).
+
+---
+Source: https://github.com/infinimesh/core
+# Device Authentication & MQTT
+
+infinimesh has no device SDK. A device brings its own MQTT client.
+
+Devices authenticate with a TLS client certificate. Port 8883 requires the certificate. Port 1883 accepts the same certificate's SHA-256 fingerprint, base64-encoded, as the MQTT password. The username is the device id. The device must be enabled, and basic auth must be enabled for that device. Turn basic auth on in the console (the lock on the device card) or with `POST /devices/<device-id>/toggle/basic`.
+
+A device token (JWT) is for the HTTP, gRPC and Connect API. The bridge does not accept that token as the MQTT password.
+
+Port 1883 is not encrypted. Anyone who knows the fingerprint can log in. Use it for local tests.
+
+## Certificate
+
+Generate a key/cert pair (self-signed example):
+```bash
+openssl genrsa -out device.key 4096
+openssl req -new -x509 -sha256 -key device.key -out device.crt -days 365 \
+  -subj "/CN=demo-sensor"
+```
+
+Upload the public cert when creating the device (UI or CLI `inf devices create` with `--crt device.crt`).
+
+TLS:
+```bash
+mosquitto_pub --cafile hack/server.crt \
+  --cert device.crt --key device.key \
+  -t devices/demo-sensor/state/reported \
+  -m '{"temp":21.5}' \
+  -h api.${BASE_DOMAIN} -p 8883 --tls-version tlsv1.2
+```
+
+Plain MQTT, same device. The password is the base64 SHA-256 fingerprint of `device.crt`:
+```bash
+FP=$(openssl x509 -in device.crt -outform DER | openssl dgst -sha256 -binary | base64)
+mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
+  -u demo-sensor -P "$FP" \
+  -t devices/demo-sensor/state/reported \
+  -q 1 \
+  -m '{"temp":21.5}'
+```
+
+On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](public-tls.md).
+
+## API token
+
+The CLI uses a device token against the API, not against MQTT:
+```bash
+inf devices token <device-id> --allow-post > demo-sensor.token
+inf devices state <device-id> --token "$(cat demo-sensor.token)" --report '{"online":true,"temp":21.5}'
+inf devices state <device-id>
+inf devices state <device-id> --patch '{"threshold":50}'
+```
+
+`inf devices state mqtt` can publish too. `--basic` is `device-id:password`. The CLI default topic is still `shadow/devices/%s/desired`, which this bridge rejects:
+```bash
+inf devices state mqtt --basic "demo-sensor:$FP" \
+  --topic 'devices/%s/state/reported' --report '{"temp":21.5}'
+inf devices state mqtt --device-id demo-sensor --basic "demo-sensor:$FP" \
+  --topic 'devices/%s/state/desired' --desired
+```
+
+## Topics
+
+A device may publish only `devices/<id>/state/reported` and subscribe only to `devices/<id>/state/desired`. `<id>` is that device's id. Wildcards and any other topic, including another device's, are rejected. A publish to `desired` is not stored as reported.
+
+The retain flag is accepted on `reported`. The stored reported state is that payload. Payloads must be JSON objects. Desired state is pushed when the device subscribes, at the QoS granted for that subscription.
+
+`shadow/devices/...` is not a bridge topic.
+
+## QoS, session, and will
+
+QoS 0 is delivered once, with no acknowledgement. QoS 1 publishes receive `PUBACK`. QoS 2 uses `PUBREC`, then `PUBREL` and `PUBCOMP`. The reported payload is stored when `PUBREL` arrives. A repeated QoS 2 packet id completes that handshake and is stored once.
+
+Desired state is sent at the subscribed QoS. An MQTT 5 desired publish carries content type `application/json` when the sender did not set one, plus any response topic, correlation data, and user properties supplied with the send. Those properties stay on the message through retries and a session resume. QoS 1 and 2 stay inflight until `PUBACK` or `PUBCOMP`, and are retried with the DUP flag. MQTT 3.1.1 keeps that inflight state for one hour when the clean session flag is 0. MQTT 5 keeps it for the session expiry interval in the CONNECT packet. Expiry 0 drops the session when the connection closes. The state lives in the bridge process. A bridge restart clears it.
+
+MQTT 5 `CONNACK` advertises a receive maximum of 32, a maximum packet size of 1 MiB, and a topic alias maximum of 16. Inbound topic aliases use that server maximum for the connection. The topic alias maximum in the client's `CONNECT` does not change it. An alias is forgotten when the connection closes. The client's maximum packet size limits publishes the bridge sends. An inbound packet larger than 1 MiB is rejected.
+
+The bridge reads the client keepalive and closes the connection after one and a half times that interval with no packet. It also checks that the device is still enabled at least every 30 seconds. A disabled device is disconnected with not authorized, and that disconnect does not store the will. MQTT 5 `CONNACK`, `PUBACK`, `PUBREC`, `SUBACK`, and `DISCONNECT` carry reason codes. The bridge accepts session expiry, the client's receive maximum, the client's maximum packet size, topic aliases, message expiry, content type, response topic, correlation data, and user properties. Message expiry of zero is acknowledged and not stored. A later expiry is applied again while the message waits to be sent or for `PUBREL`; once that time has passed the message is dropped. The remaining interval is written on the outbound publish. The bridge holds at most 32 inbound QoS 2 packet ids. Another MQTT 5 QoS 2 publish receives `PUBREC` reason `0x93` and is not stored. A held id is dropped after two minutes, or sooner when its message expiry elapses. A `PUBREL` for a missing id receives `PUBCOMP` reason `0x92`. A will message is stored as reported state when its topic is `devices/<id>/state/reported` and the connection drops without a `DISCONNECT`. The bridge does not publish a reply to the response topic.
+
+## Troubleshooting
+
+- MQTT connection closed right after connect: the certificate is not registered, the device is disabled, or on 1883 the username is not the device id, the password is not the fingerprint, or basic auth is off.
+- 401/permission errors: ensure token includes the device with at least read; reissue with `--allow-post` for writes.
+- Connection refused: check broker host/port and that `docker compose ps` shows `mqtt-bridge` healthy.
+- TLS failures: locally, `--cafile hack/server.crt`. On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](public-tls.md).
+
+---
+Source: https://github.com/infinimesh/addons
+# Infinimesh addons
+
+Module `github.com/infinimesh/addons`. Connectors that sit beside [core](https://github.com/infinimesh/core). They are not part of the platform process.
+
+Apache-2.0.
+
+## Layout
+
+| Addon | What it does |
+|---|---|
+| [`timeseries`](timeseries/README.md) | API to RedisTimeSeries, with Grafana |
+| [`kafka`](kafka/README.md) | API to a Kafka or KafScale topic, JSON keyed by device id |
+| [`webhook`](webhook/README.md) | API to an HTTP endpoint, one signed JSON POST per shadow update |
+| [`postgres`](postgres/README.md) | API to a Postgres table, optionally a TimescaleDB hypertable |
+| [`influxdb`](influxdb/README.md) | API to InfluxDB 2, InfluxDB Cloud or InfluxDB 3, one point per shadow update |
+| [`mqttbridge`](mqttbridge/README.md) | API to an existing MQTT broker, JSON per shadow update on a topic template |
+| [`cloudconnect`](cloudconnect/README.md) | API to CSV files, then S3, Google Cloud Storage or Azure Blob |
+| [`redisstream`](redisstream/README.md) | API to the Redis stream `objects`, read by the sinks below |
+| [`elasticsearch`](elasticsearch/README.md) | Redis stream to the Elasticsearch index `infinimesh` |
+| [`snowflake`](snowflake/README.md) | Redis stream to the Snowflake table `infinimesh.device_states` |
+| [`saphana`](saphana/README.md) | Redis stream to the SAP HANA table `devices` |
+
+[`sdk`](sdk/README.md) holds the shared API client, the device worker manager, the shadow runner, the JSON message and the batcher used by the shadow addons, and the Redis stream consumer.
+
+To write your own addon, see [docs/write-an-addon.md](docs/write-an-addon.md).
+
+## Run
+
+From this repository, with `API_URL` pointing at a running platform:
+
+```bash
+docker compose -f timeseries/docker-compose.yml up --build
+```
+
+The sink compose files (`elasticsearch`, `snowflake`, `saphana`) already start `redisstream`, so you do not run it on its own as well.
+
+Each compose file's build context is the repository root. Set `USERNAME`, `PASSWORD`, and `API_URL` in that file. Placeholders are `CHANGEME` and `https://api.example.com`.
+
+## Talking to core
+
+The SDK uses the core v3 gRPC API through the generated clients in [infinimesh/proto](https://github.com/infinimesh/proto), the same way `inf` does.
+
+- `USERNAME` and `PASSWORD` are a standard infinimesh account. A fresh core install has the root account `infinimesh` with the password from `INF_DEFAULT_ROOT_PASS`. A separate read only account is better for addons.
+- `API_URL` is the gRPC address. `https://api.example.com` uses TLS on port 443, which the core compose setup routes to the api service. `http://api.example.com:8000` uses plain gRPC on the `grpc` entry point, or `http://api:8000` from inside the core compose network. With no scheme, TLS is used.
+- Addons see every device the account can see. For each device they ask core for a short device token with read access and stream its shadow. Only the reported state is used. The v3 shadow has no version, so the `version` field the sinks store is empty.
+
+`SNOWFLAKE_INITDB=true` creates the Snowflake database and table. Cloud Connect commands are `cloudconnect/csvwriter`, `s3`, `cloudstorage`, and `blob`.
+
+## Checks
+
+`make commit-check` runs `fmt`, `race`, `test-fuzz`, and `code-ql-gate`. `fmt` writes Go files that `gofmt` would change. `code-ql` runs the CodeQL CLI and writes SARIF under `.tmp/codeql/`. The gate fails when a result is level `error`, ignoring paths under `vendor`. `jq` is required. GitHub Actions runs the same race and fuzz steps, and CodeQL on pull requests.
+
+## Build
+
+```bash
+go test ./...
+go build -o redisstream ./redisstream
+```
+
+---
+Source: https://github.com/infinimesh/docs
+# infinimesh docs
+
+infinimesh is an open source (Apache-2.0) device layer: devices connect over MQTT or HTTP, and infinimesh keeps their identity, permissions and state, then hands the data to the tools you already run.
+
+The server lives in [infinimesh/core](https://github.com/infinimesh/core). This repo holds small device examples and practical guides.
+
+## Examples
+
+Each example is one sketch or script with a short README.
+
+| Example | Board | Protocol |
+| --- | --- | --- |
+| [examples/esp32-mqtt](examples/esp32-mqtt) | ESP32 (Arduino) | MQTT over TLS on 8883 with a device certificate |
+| [examples/esp32-http](examples/esp32-http) | ESP32 (Arduino) | HTTPS with a device token |
+| [examples/picow-mqtt](examples/picow-mqtt) | Raspberry Pi Pico W (MicroPython) | MQTT over TLS on 8883 with a device certificate |
+| [examples/curl](examples/curl) | Any computer | HTTPS with a device token |
+
+## Guides
+
+- [guides/small-devices-tls.md](guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
+
+## Good to know
+
+- Devices bring their own MQTT or HTTP client. infinimesh has no device SDK.
+- MQTT topics: a device publishes to `devices/<id>/state/reported` and subscribes to `devices/<id>/state/desired`. `<id>` is the device uuid.
+- Boards without TLS (for example ATmega Arduinos) should talk to a local gateway, such as a Raspberry Pi or an ESP32, which then connects to infinimesh over TLS. See the guide above.
+- The HTTP path `POST /devices/states` may change to a smaller `/v1/ingest` endpoint later. We will update the examples when it does.
+- The boards themselves have not been tested yet. What was tested is listed in each README.
+
+## Check before you commit
+
+```bash
+make commit-check
+```
+
+This runs shellcheck, a MicroPython compile check, and `arduino-cli compile` for both ESP32 sketches.
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).

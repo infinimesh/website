@@ -1,0 +1,21 @@
+# infinimesh
+
+> infinimesh is an Apache-2.0, self-hosted IoT backend written in Go. It is the device layer for the stack you already run: device identity, access as a permission graph (per customer and per partner), reported and desired shadow state, MQTT 3.1.1/5 and HTTP ingest. Addons stream device data to Kafka, KafScale, Postgres/TimescaleDB, InfluxDB, webhooks, an MQTT broker, Elasticsearch, Snowflake, SAP HANA, S3, GCS and Azure Blob. There is no paid edition.
+
+infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
+
+## Docs
+- [Installation](https://github.com/infinimesh/core/blob/main/docs/installation.md): Docker Compose on one machine
+- [Device auth](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): certificates, tokens, MQTT login
+- [Public TLS](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): running on a public domain
+- [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
+
+## Code
+- [core](https://github.com/infinimesh/core): API, registry, shadow, MQTT bridge, console
+- [addons](https://github.com/infinimesh/addons): data sinks and the write-an-addon guide
+- [inf-cli](https://github.com/infinimesh/inf-cli): the inf command
+- [proto](https://github.com/infinimesh/proto): API schemas
+
+## Optional
+- [Kubernetes operator](https://github.com/infinimesh/platform-operator)
+- [Cluster recipes](https://github.com/infinimesh/k8s)
