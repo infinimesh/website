@@ -52,17 +52,20 @@ svg text{fill:var(--fg);font:14px system-ui,sans-serif}svg .m{fill:var(--mute);f
 table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;overflow:auto;font-size:14px}.tag{font-size:12px;color:var(--mute)}
 .brand img{filter:invert(1) hue-rotate(180deg)}@media (prefers-color-scheme:dark){.brand img{filter:none}}
+.demo{margin:32px 0 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#0e1116}.demo video{display:block;width:100%;height:auto}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}.shots figure{margin:0}.shots img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px}.shots figcaption{color:var(--mute);font-size:15px;margin-top:8px}
 footer{padding:32px 24px;color:var(--mute);font-size:14px}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#ai">AI</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="/api/">API</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
+<header><a class="brand" href="/"><img src="/images/logo_03.png" alt="infinimesh" width="163" height="32" style="vertical-align:middle"></a><nav><a href="#how">How it works</a><a href="#see">See it</a><a href="#access">Access</a><a href="#addons">Addons</a><a href="#ai">AI</a><a href="#compare">Compare</a><a href="#start">Quickstart</a><a href="https://github.com/infinimesh/docs">Docs</a><a href="/api/">API</a><a href="https://github.com/infinimesh/core">GitHub</a></nav></header>
 <main>
 <section>
 <p class="kicker">Apache-2.0 · self-hosted · written in Go</p>
 <h1>The device layer for your IoT and AI stack.</h1>
 <p class="lede">infinimesh handles device identity, access and state. Your data goes to the tools you already use: Kafka, Postgres, InfluxDB, a webhook. No dashboard you have to adopt. The open source core is complete and free. No feature is held back for a paid tier.</p>
 <a class="btn p" href="#start">Run it in 5 commands</a><a class="btn" href="https://github.com/infinimesh/docs">Device examples</a><a class="btn" href="https://github.com/infinimesh/core">Source on GitHub</a>
+<div class="demo"><video autoplay muted loop playsinline preload="metadata" width="1280" height="720" poster="/media/inf-cli-demo-poster.png" aria-label="Terminal demo: the inf CLI creates a namespace, a device and a rule, reports a hot reading, lists the raised alarm and acks it"><source src="/media/inf-cli-demo.webm" type="video/webm"><source src="/media/inf-cli-demo.mp4" type="video/mp4"></video></div>
 </section>
 
 <section id="how">
@@ -125,6 +128,18 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <div class="card"><h3>OTA contract</h3><p>Core stores the target version per device and the status the device reports back. An OTA addon registers through the plugins API first, then the namespace switch turns on. Firmware delivery (hawkBit, Mender) is the addon's job. <a href="https://github.com/infinimesh/core/blob/main/docs/ota.md">OTA docs</a>.</p></div>
 <div class="card"><h3>Audit and quotas</h3><p>Alarm, plugin and OTA actions are logged with who did them. Each namespace can cap devices and messages per second. Zero means no limit.</p></div>
 <div class="card"><h3>CoAP and Redis sessions</h3><p>A CoAP gateway takes JSON on UDP 5683 for small devices on a private network. <code>MQTT_SESSION_STORE=redis</code> keeps bridge sessions across restarts. <a href="https://github.com/infinimesh/core/blob/main/docs/coap.md">CoAP docs</a>.</p></div>
+</div>
+</section>
+
+<section id="see">
+<h2>See it</h2>
+<p class="lede">The console from the 3.4 release, running on one laptop with Docker Compose.</p>
+<div class="shots">
+<figure><img src="/media/01-devices.webp" alt="Console devices list" width="1900" height="1113" loading="lazy" decoding="async"><figcaption>Devices in a namespace with their tags and latest reported state.</figcaption></figure>
+<figure><img src="/media/02-device.webp" alt="Console device page showing the desired OTA version" width="1900" height="1113" loading="lazy" decoding="async"><figcaption>One device with the OTA target version set in its desired state.</figcaption></figure>
+<figure><img src="/media/03-rules.webp" alt="Console rules page" width="1900" height="1113" loading="lazy" decoding="async"><figcaption>Rules: a CEL condition, a clear condition and a cooldown per rule.</figcaption></figure>
+<figure><img src="/media/04-alarms.webp" alt="Console alarms list with raised and acked alarms" width="1900" height="1113" loading="lazy" decoding="async"><figcaption>Alarms raised by those rules, ready to ack or clear.</figcaption></figure>
+<figure><img src="/media/05-ota.webp" alt="Console namespace OTA settings" width="1900" height="1113" loading="lazy" decoding="async"><figcaption>The namespace OTA switch. It turns on only after an OTA addon is registered.</figcaption></figure>
 </div>
 </section>
 
