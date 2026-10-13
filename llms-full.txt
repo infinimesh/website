@@ -2,7 +2,7 @@
 
 > infinimesh is an Apache-2.0, self-hosted IoT backend written in Go. It is the device layer for your IoT and AI stack: device identity, access as a permission graph (per customer and per partner), reported and desired shadow state, MQTT 3.1.1/5 and HTTP ingest. Addons stream device data to Kafka, KafScale, Postgres/TimescaleDB, InfluxDB, webhooks, an MQTT broker, Elasticsearch, Snowflake, SAP HANA, S3, GCS and Azure Blob. The open source core is complete and free. No feature is held back for a paid tier.
 
-infinimesh has no dashboards, rule engine or OTA. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
+infinimesh has no dashboards. Coming in 3.4 (release candidates out now): rules and alarms on device state with ack and clear, and an OTA contract in core (target version per device, reported status, an OTA addon must register before updates switch on). The OTA addons for hawkBit and Mender are coming soon. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
 
 AI ready (coming soon, not built yet): device state for AI agents over an MCP server and for any LLM through an addon for OpenAI-compatible APIs (vLLM, Ollama, Mistral, OpenAI, Anthropic, Gemini), scoped by the same permission graph. Models can run locally so data stays on your servers.
 
@@ -324,7 +324,6 @@ Apache-2.0.
 | [`postgres`](postgres/README.md) | API to a Postgres table, optionally a TimescaleDB hypertable |
 | [`influxdb`](influxdb/README.md) | API to InfluxDB 2, InfluxDB Cloud or InfluxDB 3, one point per shadow update |
 | [`mqttbridge`](mqttbridge/README.md) | API to an existing MQTT broker, JSON per shadow update on a topic template |
-| [`rules`](rules/README.md) | rules and alarms on shadow updates, with webhook, MQTT, desired state and log actions |
 | [`cloudconnect`](cloudconnect/README.md) | API to CSV files, then S3, Google Cloud Storage or Azure Blob |
 | [`redisstream`](redisstream/README.md) | API to the Redis stream `objects`, read by the sinks below |
 | [`elasticsearch`](elasticsearch/README.md) | Redis stream to the Elasticsearch index `infinimesh` |

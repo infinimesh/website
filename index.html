@@ -112,8 +112,8 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 </div>
 <h2 style="margin-top:36px">When not to use it</h2>
 <div class="grid">
-<div class="card"><h3>You want an all-in-one UI</h3><p>No dashboards or rule engine. Use ThingsBoard, or Grafana on top of an addon.</p></div>
-<div class="card"><h3>You need OTA today</h3><p>Firmware updates are not built in yet.</p></div>
+<div class="card"><h3>You want an all-in-one UI</h3><p>No dashboards. Rules and alarms on device state come in 3.4, but charts are up to you. Use Grafana on top of an addon, or ThingsBoard.</p></div>
+<div class="card"><h3>You need OTA today</h3><p>3.4 adds the OTA contract in core: a target version per device and the status the device reports back. The addon that delivers firmware (hawkBit, Mender) is coming soon.</p></div>
 <div class="card"><h3>You need an HA broker cluster now</h3><p>MQTT sessions live in bridge memory today. Multi-replica sessions are on the roadmap.</p></div>
 </div>
 </section>
@@ -150,7 +150,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <tr><td>License</td><td>Apache-2.0, complete core, nothing held back</td><td>Apache-2.0, paid PE</td><td>Apache-2.0, paid EE</td><td>BSL for recent versions</td></tr>
 <tr><td>Per-customer device access</td><td>Graph in core</td><td>Customer hierarchy in PE</td><td>Yes</td><td>No device registry</td></tr>
 <tr><td>Device shadow</td><td>Yes</td><td>Attributes</td><td>No</td><td>No</td></tr>
-<tr><td>Dashboards and rules</td><td>No, use your tools</td><td>Yes</td><td>Moved to EE</td><td>Rules engine</td></tr>
+<tr><td>Dashboards and rules</td><td>Rules and alarms in 3.4, no dashboards</td><td>Yes</td><td>Moved to EE</td><td>Rules engine</td></tr>
 <tr><td>Stack</td><td>Go services</td><td>Java</td><td>Go, many services</td><td>Erlang</td></tr></table>
 <p class="tag">Sources: <a href="https://thingsboard.io/ce-vs-pe-diff/">ThingsBoard CE vs PE</a>, <a href="https://www.absmach.eu/blog/magistrala-community-edition-enterprise-edition/">Magistrala CE/EE</a>, <a href="https://www.emqx.com/en/blog/adopting-business-source-license-to-accelerate-mqtt-and-ai-innovation">EMQX license</a>. Checked 2026-10-12.</p>
 </section>
