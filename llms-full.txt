@@ -2,7 +2,7 @@
 
 > infinimesh is an Apache-2.0, self-hosted IoT backend written in Go. It is the device layer for your IoT and AI stack: device identity, access as a permission graph (per customer and per partner), reported and desired shadow state, MQTT 3.1.1/5 and HTTP ingest. Addons stream device data to Kafka, KafScale, Postgres/TimescaleDB, InfluxDB, webhooks, an MQTT broker, Elasticsearch, Snowflake, SAP HANA, S3, GCS and Azure Blob. The open source core is complete and free. No feature is held back for a paid tier.
 
-infinimesh has no dashboards. Coming in 3.4 (release candidates out now): rules and alarms on device state with ack and clear, and an OTA contract in core (target version per device, reported status, an OTA addon must register before updates switch on). The OTA addons for hawkBit and Mender are coming soon. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
+infinimesh has no dashboards. In 3.4: rules and alarms on device state with ack and clear, and an OTA contract in core (target version per device, reported status, an OTA addon must register before updates switch on), an audit log, namespace quotas, CoAP ingest on UDP 5683, and MQTT bridge sessions in Redis). The OTA addons for hawkBit and Mender are coming soon. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
 
 AI ready (coming soon, not built yet): device state for AI agents over an MCP server and for any LLM through an addon for OpenAI-compatible APIs (vLLM, Ollama, Mistral, OpenAI, Anthropic, Gemini), scoped by the same permission graph. Models can run locally so data stays on your servers.
 
@@ -121,10 +121,10 @@ go build -o inf .
 A short session against the local stack:
 
 ```bash
-API=http://api.${BASE_DOMAIN}:8000
+API=api.${BASE_DOMAIN}:443
 
-# log in as the admin account
-inf login --api "$API" --username infinimesh --password infinimesh --insecure
+# log in as the admin account. The default Traefik certificate does not cover the local host name.
+inf login --api "$API" --username infinimesh --password infinimesh --insecure-skip-verify
 
 # list namespaces and devices
 inf namespaces list
@@ -161,7 +161,7 @@ mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
 
 ## Releases
 
-Current version: `v3.2.0` (latest stable). Release candidate: `v3.4.0-rc.10` (the default in `.env.example` and the Helm chart until v3.4.0 ships). See [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/infinimesh/core/releases).
+Current version: `v3.4.0`. The inf CLI, the platform operator and the Helm chart are released with the same version. See [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/infinimesh/core/releases).
 
 A tag `vX.Y.Z` or `vX.Y.Z-rN` on `main` publishes `ghcr.io/infinimesh/core/<service>` for `api`, `console`, `gateway`, `mqtt-bridge`, `pairing` and `shadow`. Each tag is also published as `:latest`. A revision tag also publishes the base version `:vX.Y.Z`. The GitHub release text is the matching `## [tag]` section in `CHANGELOG.md`. The same tag on [platform-operator](https://github.com/infinimesh/platform-operator) publishes `ghcr.io/infinimesh/platform-operator`.
 
