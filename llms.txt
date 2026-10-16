@@ -2,7 +2,7 @@
 
 > infinimesh is an Apache-2.0, self-hosted IoT backend written in Go. It is the device layer for your IoT and AI stack: device identity, access as a permission graph (per customer and per partner), reported and desired shadow state, MQTT 3.1.1/5 and HTTP ingest. Addons stream device data to Kafka, KafScale, Postgres/TimescaleDB, InfluxDB, webhooks, an MQTT broker, Elasticsearch, Snowflake, SAP HANA, S3, GCS and Azure Blob. The open source core is complete and free. No feature is held back for a paid tier.
 
-infinimesh has no dashboards. In 3.4: rules and alarms on device state with ack and clear, and an OTA contract in core (target version per device, reported status, an OTA addon must register before updates switch on), an audit log, namespace quotas, CoAP ingest on UDP 5683, and MQTT bridge sessions in Redis). The OTA addons for hawkBit and Mender are coming soon. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
+infinimesh has no dashboards. In 3.4: rules and alarms on device state with ack and clear, and an OTA contract in core (target version per device, reported status, an OTA addon must register before updates switch on), an audit log, namespace quotas, CoAP ingest on UDP 5683, and MQTT bridge sessions in Redis). The OTA addons are hawkBit, Mender, and a signed webhook. You build them. They are not published images. The core v3.4.1 image does not serve the namespace webhook URL to the webhook addon. It is not an HA MQTT cluster yet. It helps EU device makers give customers access to device data, but it does not make a product Data Act compliant by itself.
 
 AI ready (coming soon, not built yet): device state for AI agents over an MCP server and for any LLM through an addon for OpenAI-compatible APIs (vLLM, Ollama, Mistral, OpenAI, Anthropic, Gemini), scoped by the same permission graph. Models can run locally so data stays on your servers.
 
@@ -14,14 +14,14 @@ AI ready (coming soon, not built yet): device state for AI agents over an MCP se
 - [API versioning](https://github.com/infinimesh/core/blob/main/docs/api-versioning.md): the v1 API is stable, REST under /v1, breaking changes checked against proto v1.0.0
 - [Device shadow streams](https://github.com/infinimesh/core/blob/main/docs/shadow.md): account and namespace streams, event ids, read-only streaming token for addons
 - [Rules and alarms](https://github.com/infinimesh/core/blob/main/docs/rules.md): CEL conditions on device state, alarms with ack, clear, cooldown and repeat
-- [OTA contract](https://github.com/infinimesh/core/blob/main/docs/ota.md): target version per device, OTA addon registration, bulk assign with per-device results
+- [OTA contract](https://github.com/infinimesh/core/blob/main/docs/ota.md): target version per device, and the hawkBit, Mender, and signed webhook addons
 - [CoAP ingest](https://github.com/infinimesh/core/blob/main/docs/coap.md): JSON over UDP 5683, no DTLS, private networks only
 - [CLI guide](https://github.com/infinimesh/docs/blob/main/guides/cli-getting-started.md): inf login on :443, root and addon tokens, quotas, OTA, metrics
 - [Docs and examples](https://github.com/infinimesh/docs): ESP32 MQTT, ESP32 HTTP, Pico W, curl, small-device TLS guide
 
 ## Code
 - [core](https://github.com/infinimesh/core): API, registry, shadow, MQTT bridge, console
-- [addons](https://github.com/infinimesh/addons): data sinks and the write-an-addon guide
+- [addons](https://github.com/infinimesh/addons): data sinks, OTA addons, and the write-an-addon guide
 - [inf-cli](https://github.com/infinimesh/inf-cli): the inf command
 - [proto](https://github.com/infinimesh/proto): API schemas
 
