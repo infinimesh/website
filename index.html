@@ -131,6 +131,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <div class="card"><h3>Audit and quotas</h3><p>Alarm, plugin and OTA actions are logged with who did them. Each namespace can cap devices and messages per second. Zero means no limit.</p></div>
 <div class="card"><h3>CoAP and Redis sessions</h3><p>A CoAP gateway takes JSON on UDP 5683 for small devices on a private network. <code>MQTT_SESSION_STORE=redis</code> keeps bridge sessions across restarts. <a href="https://github.com/infinimesh/core/blob/main/docs/coap.md">CoAP docs</a>.</p></div>
 <div class="card"><h3>3.4.1: OTA requests and a reliable stream</h3><p>An account asks for a firmware version and the OTA addon sets the target. On reported state the addon token can write only <code>reported.ota</code>, and <code>inf plugins rotate</code> replaces it. The shadow stream keeps every update across reconnects, with a 256-event replay window per namespace and a full resync after a larger gap. <a href="https://github.com/infinimesh/core/blob/main/CHANGELOG.md">Changelog</a>.</p></div>
+<div class="card"><h3>3.4.2: OTA addons released</h3><p>The hawkBit, Mender and signed webhook addons are released in <a href="https://github.com/infinimesh/addons/releases/tag/v3.4.2">addons v3.4.2</a>. You build them from source. There are no published images. Core 3.4.2 lets the webhook addon token read its namespace webhook URL, so the webhook addon needs core 3.4.2 or newer.</p></div>
 </div>
 </section>
 
@@ -162,9 +163,9 @@ d.addEventListener("touchend",function(e){if(x0===null)return;var dx=e.changedTo
 <h2>Addons</h2>
 <p>Each addon is a small separate service that reads device state and writes it out. Writing your own is mostly reading one stream: one stream per account or namespace, with device added and removed events, and an event id on every message so retries can drop duplicates. A read-only streaming token lets a long-running addon follow it without a per-device token. <a href="https://github.com/infinimesh/core/blob/main/docs/shadow.md">Stream docs</a>, <a href="https://github.com/infinimesh/addons">addons repo</a>.</p>
 <div class="grid">
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-hawkbit/README.md">hawkBit OTA</a></h3><p>Assigns a distribution set for a requested version. You build it. It is not a published image.</p></div>
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-mender/README.md">Mender OTA</a></h3><p>Creates one deployment of the requested artifact on the open source Management API.</p></div>
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-webhook/README.md">Signed OTA webhook</a></h3><p>Posts OTA and membership events, and accepts a target or a report. The core v3.4.1 image does not serve the namespace webhook URL to the addon token.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-hawkbit/README.md">hawkBit OTA</a></h3><p>Assigns a distribution set for a requested version. Released in addons v3.4.2. You build it. It is not a published image.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-mender/README.md">Mender OTA</a></h3><p>Creates one deployment of the requested artifact on the open source Management API. Released in addons v3.4.2.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-webhook/README.md">Signed OTA webhook</a></h3><p>Posts OTA and membership events, and accepts a target or a report. Released in addons v3.4.2. Needs core 3.4.2 or newer.</p></div>
 <div class="card"><h3>Kafka / KafScale</h3><p>JSON per update, keyed by device ID.</p></div>
 <div class="card"><h3>Postgres / TimescaleDB</h3><p>Rows per state update.</p></div>
 <div class="card"><h3>InfluxDB 2 and 3</h3><p>Points per reported field.</p></div>
