@@ -195,8 +195,9 @@ d.addEventListener("touchend",function(e){if(x0===null)return;var dx=e.changedTo
 <tr><td>Per-customer device access</td><td>Graph in core</td><td>Customer hierarchy in PE</td><td>Yes</td><td>No device registry</td></tr>
 <tr><td>Device shadow</td><td>Yes</td><td>Attributes</td><td>No</td><td>No</td></tr>
 <tr><td>Dashboards and rules</td><td>Rules and alarms, no dashboards</td><td>Yes</td><td>Moved to EE</td><td>Rules engine</td></tr>
+<tr><td>OTA firmware updates</td><td>OTA contract in core, delivery through addons you build yourself (hawkBit, Mender, signed webhook)</td><td>Built in</td><td>Not in core, the separate edge Agent does binary updates</td><td>Not a device backend</td></tr>
 <tr><td>Stack</td><td>Go services</td><td>Java</td><td>Go, many services</td><td>Erlang</td></tr></table>
-<p class="tag">Sources: <a href="https://thingsboard.io/ce-vs-pe-diff/">ThingsBoard CE vs PE</a>, <a href="https://www.absmach.eu/blog/magistrala-community-edition-enterprise-edition/">Magistrala CE/EE</a>, <a href="https://www.emqx.com/en/blog/adopting-business-source-license-to-accelerate-mqtt-and-ai-innovation">EMQX license</a>. Checked 2026-10-12.</p>
+<p class="tag">Sources: <a href="https://thingsboard.io/ce-vs-pe-diff/">ThingsBoard CE vs PE</a>, <a href="https://www.absmach.eu/blog/magistrala-community-edition-enterprise-edition/">Magistrala CE/EE</a>, <a href="https://www.emqx.com/en/blog/adopting-business-source-license-to-accelerate-mqtt-and-ai-innovation">EMQX license</a>. Checked 2026-10-12. <a href="https://github.com/absmach/agent">Magistrala Agent</a> and <a href="https://absmach.eu/docs/magistrala/">Magistrala docs</a> for OTA, checked 2026-10-16.</p>
 </section>
 
 <section id="start">
