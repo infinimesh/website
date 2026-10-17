@@ -32,8 +32,11 @@ Source: https://github.com/infinimesh/core
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/infinimesh/core/v3)](https://goreportcard.com/report/github.com/infinimesh/core/v3)
 [![Go Reference](https://pkg.go.dev/badge/github.com/infinimesh/core/v3.svg)](https://pkg.go.dev/github.com/infinimesh/core/v3)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/infinimesh/core/badges/coverage.json)](https://github.com/infinimesh/core/actions/workflows/go.yml)
 [![Release](https://img.shields.io/github/v/release/infinimesh/core)](https://github.com/infinimesh/core/releases)
-[![License](https://img.shields.io/github/license/infinimesh/core)](LICENSE)
+[![License](https://img.shields.io/github/license/infinimesh/core)](https://github.com/infinimesh/core/blob/main/LICENSE)
+
+![The inf CLI creates a namespace, a device and a rule, reports a hot reading, lists the raised alarm and acks it](https://raw.githubusercontent.com/infinimesh/core/main/docs/media/inf-cli-demo.gif)
 
 infinimesh is an open source IoT platform you run yourself. It gives you a device registry, device auth, a device shadow (digital twin), an MQTT bridge, and REST, gRPC and Connect APIs. It runs on Docker Compose or Kubernetes.
 
@@ -43,6 +46,11 @@ What you get:
 - Device shadow with reported and desired state
 - Messages from device to cloud and from cloud to device
 - Multi-tenant namespaces with graph-based access control
+- Rules on device state that raise alarms you ack and clear ([docs/rules.md](https://github.com/infinimesh/core/blob/main/docs/rules.md))
+- An OTA contract: target version per device and reported status, switched on once an OTA addon registers ([docs/ota.md](https://github.com/infinimesh/core/blob/main/docs/ota.md))
+- CoAP ingest on UDP 5683 for private networks ([docs/coap.md](https://github.com/infinimesh/core/blob/main/docs/coap.md))
+- Fleet provisioning with bulk create and factory claims ([docs/fleet.md](https://github.com/infinimesh/core/blob/main/docs/fleet.md))
+- An audit log, namespace quotas, Prometheus metrics, and MQTT bridge sessions in Redis
 - A web console
 - Docker Compose and Kubernetes setups
 
@@ -57,19 +65,20 @@ cp .env.example .env
 docker compose up -d
 ```
 
-Open http://console.127.0.0.1.nip.io
+Open https://console.127.0.0.1.nip.io
 
-It redirects to HTTPS with a local self-signed certificate, so accept the browser warning.
+It redirects to HTTPS with a local self-signed certificate. Accept that certificate separately for `https://console.$BASE_DOMAIN`, `https://api.$BASE_DOMAIN`, and `https://media.$BASE_DOMAIN`. The browser keeps one exception per host. With `BASE_DOMAIN=localhost` those hosts are `console.localhost`, `api.localhost`, and `media.localhost`. Until `api` is accepted, login fails with no message. Until `media` is accepted, the media page shows `Offline :(`.
 
 Log in as `infinimesh` / `infinimesh`. Change the password right away.
 
 Images come from GHCR. Set `INFINIMESH_VERSION` in `.env` to pin a release. `v3.4.3` pulls that exact tag. A release candidate does not move `latest`.
 
-`BASE_DOMAIN` in `.env` is the root host for all services. The default, `127.0.0.1.nip.io`, resolves to your own machine, so it works locally with no `/etc/hosts` edits. For real use, set `BASE_DOMAIN` to your own domain (see [docs/public-tls.md](docs/public-tls.md)).
+`BASE_DOMAIN` in `.env` is the root host for all services. The default, `127.0.0.1.nip.io`, resolves to your own machine, so it works locally with no `/etc/hosts` edits. For real use, set `BASE_DOMAIN` to your own domain (see [docs/public-tls.md](https://github.com/infinimesh/core/blob/main/docs/public-tls.md)).
 
 Other services:
 
 - API (gRPC, Connect, REST): `http://api.${BASE_DOMAIN}`
+- Media files: `https://media.${BASE_DOMAIN}`
 - Traefik dashboard: `http://traefik.${BASE_DOMAIN}`
 
 ArangoDB and RabbitMQ stay on the Compose network. Their admin UIs are not routed through Traefik or Caddy. Redis `6379` and AMQP `5672` are not published on the host. The public overlay can bind AMQP to `127.0.0.1`.
@@ -80,7 +89,7 @@ Default logins. Change them before you expose anything.
 - ArangoDB, inside the Compose network: user `root`, password `openSesame`
 - RabbitMQ, inside the Compose network: `infinimesh` / `infinimesh` (from `.env`)
 
-MQTT listens on 1883 (plain) and 8883 (TLS with `hack/server.crt` and `hack/server.key`).
+MQTT listens on 8883 (TLS with `hack/server.crt` and `hack/server.key`). Plaintext 1883 listens only when `MQTT_PLAINTEXT=1`. The local Compose file sets that. `hack/server-ec.crt` is a P-256 certificate with a subject alternative name for localhost. Small-device TLS is in [docs/guides/small-devices-tls.md](https://github.com/infinimesh/core/blob/main/docs/guides/small-devices-tls.md).
 
 ## When not to use it
 
@@ -123,9 +132,9 @@ go build -o inf .
 A short session against the local stack:
 
 ```bash
-API=api.${BASE_DOMAIN}:443
+API=api.localhost:443
 
-# log in as the admin account. The default Traefik certificate does not cover the local host name.
+# log in as the admin account. The default Traefik certificate does not cover api.localhost.
 inf login --api "$API" --username infinimesh --password infinimesh --insecure-skip-verify
 
 # list namespaces and devices
@@ -141,7 +150,7 @@ inf devices state <device-id> --token "$(cat device.token)" --report '{"online":
 
 Create devices in the console, or with `inf devices create <template.json> --crt <cert.pem>`. Run `inf help` and `inf <command> --help` for all flags.
 
-The device token is for the API. MQTT needs a client certificate registered on the device. On 8883 the device sends the certificate. On 1883 the username is the device id and the password is the base64 SHA-256 fingerprint of the certificate, and basic auth must be turned on for the device. Topic rules, QoS, and session behaviour are in [docs/device-auth.md](docs/device-auth.md).
+The device token is for the API. MQTT needs a client certificate registered on the device. On 8883 the device sends the certificate. On 1883 the username is the device id and the password is the base64 SHA-256 fingerprint of the certificate, and basic auth must be turned on for the device. Topic rules, QoS, and session behaviour are in [docs/device-auth.md](https://github.com/infinimesh/core/blob/main/docs/device-auth.md).
 
 ```bash
 mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
@@ -152,10 +161,12 @@ mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
 
 ## Documentation
 
-- [docs/installation.md](docs/installation.md): prerequisites and Docker Compose setup
-- [docs/public-tls.md](docs/public-tls.md): Traefik or Caddy with Let's Encrypt on a public domain
-- [docs/device-auth.md](docs/device-auth.md): device tokens, certificates and MQTT
-- [api.swagger.json](api.swagger.json): API schema, copied from the pinned [proto](https://github.com/infinimesh/proto) module. `sh scripts/swagger_check.sh` fails if the copy drifts. `sh scripts/buf_lint_pin.sh` lints that module.
+- [docs/installation.md](https://github.com/infinimesh/core/blob/main/docs/installation.md): prerequisites and Docker Compose setup
+- [docs/public-tls.md](https://github.com/infinimesh/core/blob/main/docs/public-tls.md): Traefik or Caddy with Let's Encrypt on a public domain
+- [docs/device-auth.md](https://github.com/infinimesh/core/blob/main/docs/device-auth.md): device tokens, certificates and MQTT
+- [docs/rules.md](https://github.com/infinimesh/core/blob/main/docs/rules.md), [docs/ota.md](https://github.com/infinimesh/core/blob/main/docs/ota.md), [docs/coap.md](https://github.com/infinimesh/core/blob/main/docs/coap.md), [docs/fleet.md](https://github.com/infinimesh/core/blob/main/docs/fleet.md): the 3.4 features
+- [CLI guide](https://github.com/infinimesh/docs/blob/main/guides/cli-getting-started.md): login, quotas, rules, OTA addon registration and audit with `inf`
+- [api.swagger.json](https://github.com/infinimesh/core/blob/main/api.swagger.json): API schema, copied from the pinned [proto](https://github.com/infinimesh/proto) module. `sh scripts/swagger_check.sh` fails if the copy drifts. `sh scripts/buf_lint_pin.sh` lints that module.
 
 ## Checks
 
@@ -163,9 +174,9 @@ mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
 
 ## Releases
 
-Current version: `v3.4.3`. The Go module path is `github.com/infinimesh/core/v3`. The inf CLI, the platform operator and the Helm chart are released with the same version. See [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/infinimesh/core/releases).
+Current version: `v3.4.3`. inf-cli, platform-operator and the Helm chart in k8s are released with the same version from the core tag. See [CHANGELOG.md](https://github.com/infinimesh/core/blob/main/CHANGELOG.md) and [Releases](https://github.com/infinimesh/core/releases).
 
-A tag `vX.Y.Z` or `vX.Y.Z-rN` on `main` publishes `ghcr.io/infinimesh/core/<service>` for `api`, `console`, `gateway`, `mqtt-bridge`, `pairing` and `shadow`. Each tag is also published as `:latest`. A revision tag also publishes the base version `:vX.Y.Z`. The GitHub release text is the matching `## [tag]` section in `CHANGELOG.md`. The same tag on [platform-operator](https://github.com/infinimesh/platform-operator) publishes `ghcr.io/infinimesh/platform-operator`.
+A tag `vX.Y.Z` or `vX.Y.Z-rN` publishes `ghcr.io/infinimesh/core/<service>` and `:latest`. A revision tag also publishes `:vX.Y.Z`. A tag `vX.Y.Z-rc.N` publishes only that tag, and the GitHub release is a pre-release whose notes start with "for testing, not for production". The release text is the matching `## [tag]` section in `CHANGELOG.md`. The same tags on [platform-operator](https://github.com/infinimesh/platform-operator) publish `ghcr.io/infinimesh/platform-operator`. The Helm chart stays on its stable `image.tag` unless you set an RC tag yourself. RC images older than 30 days are deleted.
 
 ## Repositories
 
@@ -174,16 +185,16 @@ A tag `vX.Y.Z` or `vX.Y.Z-rN` on `main` publishes `ghcr.io/infinimesh/core/<serv
 - [inf-cli](https://github.com/infinimesh/inf-cli): the `inf` command
 - [platform-operator](https://github.com/infinimesh/platform-operator): Kubernetes operator
 - [k8s](https://github.com/infinimesh/k8s): cluster install recipes
-- [addons](https://github.com/infinimesh/addons): data sinks and OTA addons for hawkBit, Mender, and a signed webhook. No published addon images
+- [addons](https://github.com/infinimesh/addons): data sinks and OTA addons for hawkBit, Mender, and a signed webhook. The latest addons release is v3.4.2. It ships as source, with no published images and no Helm chart entries.
 - [website](https://github.com/infinimesh/website): the site at [infinimesh.org](https://infinimesh.org/)
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Questions and bugs go to [GitHub issues](https://github.com/infinimesh/core/issues).
+See [CONTRIBUTING.md](https://github.com/infinimesh/core/blob/main/CONTRIBUTING.md). Questions and bugs go to [GitHub issues](https://github.com/infinimesh/core/issues).
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. See [LICENSE](https://github.com/infinimesh/core/blob/main/LICENSE).
 
 ---
 Source: https://github.com/infinimesh/core
