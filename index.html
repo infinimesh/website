@@ -163,18 +163,26 @@ d.addEventListener("touchend",function(e){if(x0===null)return;var dx=e.changedTo
 <section id="addons">
 <h2>Addons</h2>
 <p>Each addon is a small separate service that reads device state and writes it out. Writing your own is mostly reading one stream: one stream per account or namespace, with device added and removed events, and an event id on every message so retries can drop duplicates. A read-only streaming token lets a long-running addon follow it without a per-device token. <a href="https://github.com/infinimesh/core/blob/main/docs/shadow.md">Stream docs</a>, <a href="https://github.com/infinimesh/addons">addons repo</a>.</p>
+<p>All addons ship as source in the <a href="https://github.com/infinimesh/addons">addons repo</a>. You build them yourself. There are no published images and no Helm entries. The latest addons release is <a href="https://github.com/infinimesh/addons/releases/tag/v3.4.2">v3.4.2</a>.</p>
+<h3 style="margin-top:24px">Data sinks and connectors</h3>
 <div class="grid">
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-hawkbit/README.md">hawkBit OTA</a></h3><p>Assigns a distribution set for a requested version. Released in addons v3.4.2. You build it. It is not a published image.</p></div>
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-mender/README.md">Mender OTA</a></h3><p>Creates one deployment of the requested artifact on the open source Management API. Released in addons v3.4.2.</p></div>
-<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-webhook/README.md">Signed OTA webhook</a></h3><p>Posts OTA and membership events, and accepts a target or a report. Released in addons v3.4.2. Needs core 3.4.2 or newer.</p></div>
-<div class="card"><h3>Kafka / KafScale</h3><p>JSON per update, keyed by device ID.</p></div>
-<div class="card"><h3>Postgres / TimescaleDB</h3><p>Rows per state update.</p></div>
-<div class="card"><h3>InfluxDB 2 and 3</h3><p>Points per reported field.</p></div>
-<div class="card"><h3>Webhook</h3><p>HTTP POST with retries.</p></div>
-<div class="card"><h3>MQTT bridge</h3><p>Forward to a broker you already run.</p></div>
-<div class="card"><h3>RedisTimeSeries</h3><p>Short history next to the shadow.</p></div>
-<div class="card"><h3>Elasticsearch, Snowflake, SAP HANA</h3><p>Search and warehouse sinks.</p></div>
-<div class="card"><h3>S3, GCS, Azure Blob</h3><p>Files per device in object storage.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/kafka/README.md">Kafka / KafScale</a></h3><p>One JSON record per shadow update on a Kafka topic, keyed by device id. Works with Apache Kafka and KafScale.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/postgres/README.md">Postgres / TimescaleDB</a></h3><p>One row per shadow update in a Postgres table, optionally a TimescaleDB hypertable.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/influxdb/README.md">InfluxDB 2 and 3</a></h3><p>One point per shadow update, written with the official v2 client. Works with InfluxDB 2, Cloud and 3.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/webhook/README.md">Webhook</a></h3><p>One HTTP POST with a JSON body per shadow update, with retries and backoff.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/mqttbridge/README.md">MQTT bridge</a></h3><p>Publishes shadow updates as JSON to an MQTT broker you already run, such as Mosquitto, EMQX, HiveMQ or AWS IoT Core.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/timeseries/README.md">RedisTimeSeries</a></h3><p>Writes every number in reported state to RedisTimeSeries. The compose file also starts Grafana.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/redisstream/README.md">Redis stream</a></h3><p>Writes reported state to the Redis stream <code>objects</code>, which the Elasticsearch, Snowflake and SAP HANA sinks read.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/elasticsearch/README.md">Elasticsearch</a></h3><p>Writes device state from the Redis stream into the Elasticsearch index <code>infinimesh</code>. Runs next to redisstream.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/snowflake/README.md">Snowflake</a></h3><p>Writes device state from the Redis stream into a Snowflake table. Runs next to redisstream.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/saphana/README.md">SAP HANA</a></h3><p>Writes device state from the Redis stream into a SAP HANA table. Runs next to redisstream.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/cloudconnect/README.md">Cloud Connect</a></h3><p>Writes reported state to CSV files per device and minute, then uploads them to S3, Google Cloud Storage or Azure Blob.</p></div>
+</div>
+<h3 style="margin-top:24px">OTA</h3>
+<div class="grid">
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-hawkbit/README.md">hawkBit OTA</a></h3><p>Connects a namespace to a hawkBit update server and assigns the distribution set for a requested version.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-mender/README.md">Mender OTA</a></h3><p>Connects a namespace to a Mender open source server and creates one deployment of the requested artifact.</p></div>
+<div class="card"><h3><a href="https://github.com/infinimesh/addons/blob/main/ota-webhook/README.md">Signed OTA webhook</a></h3><p>Posts OTA and membership events to your endpoint, and accepts a target or a report back. Needs core 3.4.2 or newer.</p></div>
 </div>
 </section>
 
