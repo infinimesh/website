@@ -254,7 +254,7 @@ mosquitto_pub -h api.${BASE_DOMAIN} -p 1883 \
   -m '{"temp":21.5}'
 ```
 
-On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](public-tls.md).
+On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](https://github.com/infinimesh/core/blob/main/docs/public-tls.md).
 
 ## API token
 
@@ -297,7 +297,7 @@ The bridge reads the client keepalive and closes the connection after one and a 
 - MQTT connection closed right after connect: the certificate is not registered, the device is disabled, or on 1883 the username is not the device id, the password is not the fingerprint, or basic auth is off.
 - 401/permission errors: ensure token includes the device with at least read; reissue with `--allow-post` for writes.
 - Connection refused: check broker host/port and that `docker compose ps` shows `mqtt-bridge` healthy.
-- TLS failures: locally, `--cafile hack/server.crt`. On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](public-tls.md).
+- TLS failures: locally, `--cafile hack/server.crt`. On a public domain the broker certificate is the Let's Encrypt certificate for `mqtt.$BASE_DOMAIN`, so the system CA bundle validates it. See [public-tls.md](https://github.com/infinimesh/core/blob/main/docs/public-tls.md).
 
 ---
 Source: https://github.com/infinimesh/core
@@ -331,22 +331,22 @@ Apache-2.0.
 
 | Addon | What it does |
 |---|---|
-| [`timeseries`](timeseries/README.md) | API to RedisTimeSeries, with Grafana |
-| [`kafka`](kafka/README.md) | API to a Kafka or KafScale topic, JSON keyed by device id |
-| [`ota-hawkbit`](ota-hawkbit/README.md) | hawkBit Management API for namespace OTA |
-| [`ota-mender`](ota-mender/README.md) | Mender open source Management API for namespace OTA |
-| [`ota-webhook`](ota-webhook/README.md) | Signed HTTP posts for namespace OTA |
-| [`webhook`](webhook/README.md) | API to an HTTP endpoint, one signed JSON POST per shadow update |
-| [`postgres`](postgres/README.md) | API to a Postgres table, optionally a TimescaleDB hypertable |
-| [`influxdb`](influxdb/README.md) | API to InfluxDB 2, InfluxDB Cloud or InfluxDB 3, one point per shadow update |
-| [`mqttbridge`](mqttbridge/README.md) | API to an existing MQTT broker, JSON per shadow update on a topic template |
-| [`cloudconnect`](cloudconnect/README.md) | API to CSV files, then S3, Google Cloud Storage or Azure Blob |
-| [`redisstream`](redisstream/README.md) | API to the Redis stream `objects`, read by the sinks below |
-| [`elasticsearch`](elasticsearch/README.md) | Redis stream to the Elasticsearch index `infinimesh` |
-| [`snowflake`](snowflake/README.md) | Redis stream to the Snowflake table `infinimesh.device_states` |
-| [`saphana`](saphana/README.md) | Redis stream to the SAP HANA table `devices` |
+| [`timeseries`](https://github.com/infinimesh/addons/blob/main/timeseries/README.md) | API to RedisTimeSeries, with Grafana |
+| [`kafka`](https://github.com/infinimesh/addons/blob/main/kafka/README.md) | API to a Kafka or KafScale topic, JSON keyed by device id |
+| [`ota-hawkbit`](https://github.com/infinimesh/addons/blob/main/ota-hawkbit/README.md) | hawkBit Management API for namespace OTA |
+| [`ota-mender`](https://github.com/infinimesh/addons/blob/main/ota-mender/README.md) | Mender open source Management API for namespace OTA |
+| [`ota-webhook`](https://github.com/infinimesh/addons/blob/main/ota-webhook/README.md) | Signed HTTP posts for namespace OTA |
+| [`webhook`](https://github.com/infinimesh/addons/blob/main/webhook/README.md) | API to an HTTP endpoint, one signed JSON POST per shadow update |
+| [`postgres`](https://github.com/infinimesh/addons/blob/main/postgres/README.md) | API to a Postgres table, optionally a TimescaleDB hypertable |
+| [`influxdb`](https://github.com/infinimesh/addons/blob/main/influxdb/README.md) | API to InfluxDB 2, InfluxDB Cloud or InfluxDB 3, one point per shadow update |
+| [`mqttbridge`](https://github.com/infinimesh/addons/blob/main/mqttbridge/README.md) | API to an existing MQTT broker, JSON per shadow update on a topic template |
+| [`cloudconnect`](https://github.com/infinimesh/addons/blob/main/cloudconnect/README.md) | API to CSV files, then S3, Google Cloud Storage or Azure Blob |
+| [`redisstream`](https://github.com/infinimesh/addons/blob/main/redisstream/README.md) | API to the Redis stream `objects`, read by the sinks below |
+| [`elasticsearch`](https://github.com/infinimesh/addons/blob/main/elasticsearch/README.md) | Redis stream to the Elasticsearch index `infinimesh` |
+| [`snowflake`](https://github.com/infinimesh/addons/blob/main/snowflake/README.md) | Redis stream to the Snowflake table `infinimesh.device_states` |
+| [`saphana`](https://github.com/infinimesh/addons/blob/main/saphana/README.md) | Redis stream to the SAP HANA table `devices` |
 
-[`sdk`](sdk/README.md) holds the shared API client, the device worker manager, the shadow runner, the JSON message and the batcher used by the shadow addons, and the Redis stream consumer.
+[`sdk`](https://github.com/infinimesh/addons/blob/main/sdk/README.md) holds the shared API client, the device worker manager, the shadow runner, the JSON message and the batcher used by the shadow addons, and the Redis stream consumer.
 
 To write your own addon, see [docs/write-an-addon.md](https://github.com/infinimesh/addons/blob/main/docs/write-an-addon.md).
 
@@ -398,15 +398,15 @@ Each example is one sketch or script with a short README.
 
 | Example | Board | Protocol |
 | --- | --- | --- |
-| [examples/esp32-mqtt](examples/esp32-mqtt) | ESP32 (Arduino) | MQTT over TLS on 8883 with a device certificate |
-| [examples/esp32-http](examples/esp32-http) | ESP32 (Arduino) | HTTPS with a device token |
-| [examples/picow-mqtt](examples/picow-mqtt) | Raspberry Pi Pico W (MicroPython) | MQTT over TLS on 8883 with a device certificate |
-| [examples/curl](examples/curl) | Any computer | HTTPS with a device token |
+| [examples/esp32-mqtt](https://github.com/infinimesh/docs/tree/main/examples/esp32-mqtt) | ESP32 (Arduino) | MQTT over TLS on 8883 with a device certificate |
+| [examples/esp32-http](https://github.com/infinimesh/docs/tree/main/examples/esp32-http) | ESP32 (Arduino) | HTTPS with a device token |
+| [examples/picow-mqtt](https://github.com/infinimesh/docs/tree/main/examples/picow-mqtt) | Raspberry Pi Pico W (MicroPython) | MQTT over TLS on 8883 with a device certificate |
+| [examples/curl](https://github.com/infinimesh/docs/tree/main/examples/curl) | Any computer | HTTPS with a device token |
 
 ## Guides
 
-- [guides/small-devices-tls.md](guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
-- [guides/node-red.md](guides/node-red.md): send device data to Node-RED with the MQTT bridge or webhook addon.
+- [guides/small-devices-tls.md](https://github.com/infinimesh/docs/blob/main/guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
+- [guides/node-red.md](https://github.com/infinimesh/docs/blob/main/guides/node-red.md): send device data to Node-RED with the MQTT bridge or webhook addon.
 
 ## Good to know
 
