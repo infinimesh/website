@@ -26,7 +26,7 @@
 <script type="application/ld+json">
 [
 {"@context":"https://schema.org","@type":"Organization","@id":"https://infinimesh.org/#org","name":"infinimesh","url":"https://infinimesh.org/","logo":"https://infinimesh.org/images/logo_03.png","sameAs":["https://github.com/infinimesh"]},
-{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"The device layer for your IoT and AI stack. Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"infinimesh core","codeRepository":"https://github.com/infinimesh/core","programmingLanguage":"Go","softwareVersion":"3.4.3","license":"https://www.apache.org/licenses/LICENSE-2.0","author":{"@id":"https://infinimesh.org/#org"},"description":"The device layer for your IoT and AI stack. Self-hosted IoT backend: device identity, permission graph, shadow state, MQTT 3.1.1/5 and HTTP."},
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"infinimesh","description":"The device layer for your IoT and AI stack.","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, Docker, Kubernetes","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://infinimesh.org/"},
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is any feature held back for a paid edition of infinimesh?","acceptedAnswer":{"@type":"Answer","text":"No. The open source core is complete and free. infinimesh is Apache-2.0 and the whole platform, including per-customer and per-partner access, is in the open source repos."}},
@@ -132,6 +132,7 @@ footer{padding:32px 24px;color:var(--mute);font-size:14px}
 <div class="card"><h3>CoAP and Redis sessions</h3><p>A CoAP gateway takes JSON on UDP 5683 for small devices on a private network. <code>MQTT_SESSION_STORE=redis</code> keeps bridge sessions across restarts. <a href="https://github.com/infinimesh/core/blob/main/docs/coap.md">CoAP docs</a>.</p></div>
 <div class="card"><h3>3.4.1: OTA requests and a reliable stream</h3><p>An account asks for a firmware version and the OTA addon sets the target. On reported state the addon token can write only <code>reported.ota</code>, and <code>inf plugins rotate</code> replaces it. The shadow stream keeps every update across reconnects, with a 256-event replay window per namespace and a full resync after a larger gap. <a href="https://github.com/infinimesh/core/blob/main/CHANGELOG.md">Changelog</a>.</p></div>
 <div class="card"><h3>3.4.2: OTA addons released</h3><p>The hawkBit, Mender and signed webhook addons are released in <a href="https://github.com/infinimesh/addons/releases/tag/v3.4.2">addons v3.4.2</a>. You build them from source. There are no published images. Core 3.4.2 lets the webhook addon token read its namespace webhook URL, so the webhook addon needs core 3.4.2 or newer.</p></div>
+<div class="card"><h3>3.4.3: current release</h3><p>Core, inf-cli, platform-operator and the Helm chart are at <a href="https://github.com/infinimesh/core/releases/tag/v3.4.3">v3.4.3</a>. The Go module path is now <code>github.com/infinimesh/core/v3</code>, so Go code imports core with the <code>/v3</code> suffix. See the <a href="https://pkg.go.dev/github.com/infinimesh/core/v3">Go reference</a>. The OTA addons stay at addons v3.4.2.</p></div>
 </div>
 </section>
 
@@ -207,6 +208,7 @@ d.addEventListener("touchend",function(e){if(x0===null)return;var dx=e.changedTo
 cd core
 cp .env.example .env
 docker compose up -d</code></pre>
+<p><code>.env.example</code> pins <code>INFINIMESH_VERSION=v3.4.3</code>. On Kubernetes, the Helm chart is <code>helm install infinimesh oci://ghcr.io/infinimesh/charts/infinimesh --version 3.4.3</code>.</p>
 <p>Open <a href="http://console.127.0.0.1.nip.io">http://console.127.0.0.1.nip.io</a></p>
 <p>Log in as <code>infinimesh</code> / <code>infinimesh</code>. Change the password right away.</p>
 <p>CLI:</p>
