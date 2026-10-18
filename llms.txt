@@ -28,3 +28,12 @@ AI ready (coming soon, not built yet): device state for AI agents over an MCP se
 ## Optional
 - [Kubernetes operator](https://github.com/infinimesh/platform-operator)
 - [Cluster recipes](https://github.com/infinimesh/k8s)
+
+## Related projects
+- [KafScale](https://kafscale.io/): Kafka-compatible streaming that keeps the log in S3. The infinimesh Kafka addon works with it
+- [KafClaw](https://github.com/KafClaw/KafClaw): agent runtime in Go that connects AI agents through Kafka topics
+- [Scalytics open source](https://www.scalytics.io/open-source): all open source projects from the same team
+- [Commercial support for infinimesh](https://www.scalytics.io/contact): Scalytics
+
+## Author
+- [Alexander Alten](https://www.novatechflow.com/2026/10/infinimesh-34-device-layer.html): initiator and lead engineer of infinimesh. CTO at Scalytics. Writes at novatechflow.com
